@@ -3,86 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Experiment 3 — Raspberry Pi Introduction | Micro Lab Prep</title>
-  <meta name="description" content="Study guide for Experiment 3: Introduction to Raspberry Pi 4B. GPIO pins, gpiozero library, microprocessor vs microcontroller comparison. CSE 4326 Micro Lab.">
+  <title>Experiment 3 — Raspberry Pi 5 Introduction | Micro Lab Prep</title>
+  <meta name="description" content="Study guide for Experiment 3: Raspberry Pi 5, GPIO pins, gpiozero Python library, microprocessor vs microcontroller. CSE 4326 Micro Lab.">
   <link rel="stylesheet" href="style.css">
   <style>
-    .pin-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin: 1rem 0; }
-    .pin-table th { background: #162030; padding: 0.7rem 1rem; text-align: left; color: var(--accent-violet); border-bottom: 2px solid var(--border); }
-    .pin-table td { padding: 0.65rem 1rem; border-top: 1px solid var(--border); color: var(--text-secondary); }
-    .pin-table tr:hover td { background: #0d1522; }
-    .pin-table td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--accent-amber); font-weight: 600; }
+    .pin-table th { color: var(--accent-violet); }
+    .pin-table td:first-child { color: var(--accent-amber); }
 
-    .timeline { position: relative; padding-left: 2rem; }
-    .timeline::before {
-      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-      width: 2px; background: linear-gradient(to bottom, var(--accent-violet), transparent);
-    }
-    .timeline-item { position: relative; margin-bottom: 1.5rem; }
-    .timeline-item::before {
-      content: ''; position: absolute; left: -2.35rem; top: 0.4rem;
-      width: 10px; height: 10px; border-radius: 50%;
-      background: var(--accent-violet); border: 2px solid var(--bg-primary);
-    }
-    .timeline-date { font-size: 0.8rem; color: var(--accent-violet); font-weight: 700; margin-bottom: 0.25rem; }
-    .timeline-item h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; }
-    .timeline-item p { color: var(--text-secondary); font-size: 0.875rem; }
-
-    .gpio-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 0.6rem; margin: 1rem 0;
-    }
-    .gpio-item {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.6rem 0.75rem;
-      text-align: center;
-    }
-    .gpio-num { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); }
-    .gpio-name { font-weight: 600; font-size: 0.85rem; margin: 0.1rem 0; }
-    .gpio-type { font-size: 0.72rem; color: var(--text-muted); }
-    .gpio-power { border-color: var(--accent-rose); }
-    .gpio-power .gpio-name { color: var(--accent-rose); }
-    .gpio-gnd { border-color: #475569; }
-    .gpio-gnd .gpio-name { color: #94a3b8; }
-    .gpio-io { border-color: var(--accent-violet); }
-    .gpio-io .gpio-name { color: #c4b5fd; }
-
-    .wiring-box {
-      background: #0d1117; border: 1px solid #30363d; border-radius: 10px;
-      padding: 1.25rem; font-family: 'JetBrains Mono', monospace;
-      font-size: 0.82rem; color: #e6edf3; line-height: 1.8; margin: 1rem 0;
-    }
-    .wiring-box .arrow { color: var(--accent-cyan); }
-    .wiring-box .comp { color: var(--accent-amber); font-weight: 700; }
-    .wiring-box .pin { color: #d2a8ff; }
-    .wiring-box .cm { color: #8b949e; font-style: italic; }
-
-    .vs-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 1rem; margin: 1rem 0;
-    }
-    .vs-card {
-      background: var(--bg-card);
-      border-radius: 10px;
-      padding: 1.25rem;
-      border: 1px solid var(--border);
-    }
+    .vs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%,260px),1fr)); gap: 1rem; margin: 1rem 0; }
+    .vs-card { background: var(--bg-card); border-radius: 10px; padding: 1.1rem; border: 1px solid var(--border); }
     .vs-card.micro { border-top: 3px solid var(--accent-cyan); }
     .vs-card.pi { border-top: 3px solid var(--accent-violet); }
-    .vs-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .vs-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.65rem; }
     .vs-card ul { list-style: none; }
-    .vs-card ul li { font-size: 0.85rem; color: var(--text-secondary); padding: 0.2rem 0 0.2rem 1.2rem; position: relative; }
+    .vs-card ul li { font-size: 0.83rem; color: var(--text-secondary); padding: 0.2rem 0 0.2rem 1.2rem; position: relative; }
     .vs-card ul li::before { content: '•'; position: absolute; left: 0; color: var(--accent-cyan); }
     .vs-card.pi ul li::before { color: var(--accent-violet); }
 
-    @media (max-width: 600px) { .vs-grid { grid-template-columns: 1fr; } }
+    .gpio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.55rem; margin: 0.75rem 0; }
+    .gpio-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 0.55rem 0.65rem; text-align: center; }
+    .gpio-num { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-muted); }
+    .gpio-name { font-weight: 600; font-size: 0.82rem; margin: 0.1rem 0; }
+    .gpio-type { font-size: 0.7rem; color: var(--text-muted); }
+    .gpio-power { border-color: var(--accent-rose); }.gpio-power .gpio-name { color: var(--accent-rose); }
+    .gpio-gnd { border-color: #475569; }.gpio-gnd .gpio-name { color: #94a3b8; }
+    .gpio-io { border-color: var(--accent-violet); }.gpio-io .gpio-name { color: #c4b5fd; }
   </style>
 </head>
 <body>
-
 <div class="reading-progress" id="progressBar"></div>
 
 <nav class="navbar">
@@ -95,22 +43,34 @@
       <li><a href="ex_4.html">Ex 4: Pi Camera</a></li>
       <li><a href="hardware.html">🔧 Hardware</a></li>
     </ul>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
   </div>
+</nav>
+<div class="nav-overlay" id="navOverlay"></div>
+<nav class="nav-drawer" id="navDrawer">
+  <div class="drawer-header"><span class="drawer-brand">⚡ MicroLab Prep</span><button class="drawer-close" id="drawerClose">✕</button></div>
+  <div class="drawer-label">Study Chapters</div>
+  <ul class="drawer-links">
+    <li><a href="index.html"><span class="link-icon">🏠</span> Home</a></li>
+    <li><a href="ex_1.html"><span class="link-icon">🤖</span> Ex 1: Arduino &amp; Gas Sensor</a></li>
+    <li><a href="ex_2.html"><span class="link-icon">📡</span> Ex 2: ESP32 &amp; XAMPP</a></li>
+    <li><a href="ex_3.html" class="active"><span class="link-icon">🍓</span> Ex 3: Raspberry Pi Intro</a></li>
+    <li><a href="ex_4.html"><span class="link-icon">📷</span> Ex 4: Pi Camera &amp; ML</a></li>
+    <li><a href="hardware.html"><span class="link-icon">🔧</span> Hardware Task (5 Marks)</a></li>
+  </ul>
 </nav>
 
 <div class="page-header">
   <div class="page-header-inner">
-    <div class="breadcrumb">
-      <a href="index.html">Home</a> <span>/</span> <span>Experiment 3</span>
-    </div>
-    <div class="flex gap-1 mb-1" style="flex-wrap:wrap; margin-bottom:0.75rem">
-      <span class="badge badge-violet">🍓 Raspberry Pi 4B</span>
+    <div class="breadcrumb"><a href="index.html">Home</a> <span>/</span> <span>Experiment 3</span></div>
+    <div class="flex gap-1" style="flex-wrap:wrap;margin-bottom:0.65rem">
+      <span class="badge badge-violet">🍓 Raspberry Pi 5</span>
       <span class="badge badge-cyan">GPIO Pins</span>
       <span class="badge badge-emerald">gpiozero Python</span>
       <span class="badge badge-amber">Written Only</span>
     </div>
-    <h1>🍓 Experiment 3: Raspberry Pi Introduction</h1>
-    <p>Introduction to Raspberry Pi 4B as a microprocessor. GPIO pin control, Python programming with gpiozero, OS setup, and the key microprocessor vs. microcontroller distinction.</p>
+    <h1>🍓 Experiment 3: Introduction to Raspberry Pi 5</h1>
+    <p>Raspberry Pi 5 as a microprocessor, GPIO control, Python gpiozero library, key distinction from microcontrollers, and LED/button code.</p>
   </div>
 </div>
 
@@ -119,13 +79,13 @@
     <h3>Contents</h3>
     <ul>
       <li><a href="#micro-vs-pi">Microcontroller vs Microprocessor</a></li>
-      <li><a href="#rpi-overview">Raspberry Pi Overview</a></li>
-      <li><a href="#rpi4b-features">Pi 4B Features</a></li>
-      <li><a href="#history">Launch History</a></li>
+      <li><a href="#rpi-overview">Raspberry Pi 5 Overview</a></li>
+      <li><a href="#board-diagram">Board Diagram</a></li>
+      <li><a href="#rpi5-features">Pi 5 Specs</a></li>
       <li><a href="#gpio">GPIO Pins</a></li>
       <li><a href="#setup">Hardware Setup</a></li>
       <li><a href="#gpiozero">gpiozero Library</a></li>
-      <li><a href="#python-code">Python Code Examples</a></li>
+      <li><a href="#python-code">Python Code</a></li>
       <li><a href="#quiz">Quick Quiz</a></li>
     </ul>
   </aside>
@@ -134,154 +94,116 @@
 
     <!-- MICROCONTROLLER VS MICROPROCESSOR -->
     <section id="micro-vs-pi">
-      <h2>⚖️ Microcontroller vs. Microprocessor — KEY EXAM TOPIC</h2>
-      <p>This is <strong>the most important distinction</strong> for questions about Raspberry Pi vs Arduino/ESP32.</p>
+      <h2>⚖️ Microcontroller vs. Microprocessor — #1 Exam Topic</h2>
+      <div class="info-box violet">
+        <div class="icon">🎯</div>
+        <div class="content">
+          <div class="label">The key difference to memorize</div>
+          <p><strong>Microcontroller</strong> = single chip with CPU + RAM + Flash + I/O, no OS, one task.<br>
+          <strong>Microprocessor (Raspberry Pi)</strong> = high-performance CPU, needs external RAM/storage, runs a full Linux OS, can multitask like a PC.</p>
+        </div>
+      </div>
 
       <div class="vs-grid">
         <div class="vs-card micro">
           <h4 class="text-cyan">🤖 Microcontroller (Arduino / ESP32)</h4>
           <ul>
-            <li>Entire computer on a single chip (CPU + RAM + Flash + I/O)</li>
+            <li>All-in-one chip (CPU + RAM + Flash + I/O)</li>
             <li>Designed for a <strong>single dedicated task</strong></li>
             <li>Very low power consumption</li>
-            <li>No operating system (bare metal or RTOS)</li>
-            <li>Limited RAM (2KB–520KB)</li>
-            <li>Runs at lower clock speeds (16–240 MHz)</li>
-            <li>Cannot run full Linux/Windows</li>
+            <li>No OS — runs bare-metal code</li>
+            <li>Limited RAM: 2KB (Arduino), 520KB (ESP32)</li>
+            <li>Low clock: 16–240 MHz</li>
+            <li>Cannot run Linux or Windows</li>
             <li>Best for: sensor reading, actuator control</li>
           </ul>
         </div>
         <div class="vs-card pi">
-          <h4 style="color:var(--accent-violet)">🍓 Microprocessor (Raspberry Pi)</h4>
+          <h4 style="color:var(--accent-violet)">🍓 Microprocessor (Raspberry Pi 5)</h4>
           <ul>
-            <li>High-performance CPU — needs external RAM, storage</li>
-            <li>Can run a <strong>full operating system</strong> (Linux)</li>
-            <li>Higher power consumption</li>
+            <li>High-performance CPU — needs external RAM, MicroSD</li>
+            <li>Can run a <strong>full OS (Linux)</strong></li>
+            <li>Higher power: 5V / ~5A</li>
             <li>Runs 32-bit and 64-bit programs</li>
-            <li>Large RAM (1–8 GB)</li>
-            <li>Clock speed: 700 MHz – 1.5 GHz</li>
+            <li>Large RAM: 4–16 GB</li>
+            <li>Fast clock: 2.4 GHz</li>
             <li>Can multitask like a full PC</li>
-            <li>Best for: ML, image processing, complex computing</li>
+            <li>Best for: ML, image processing, servers</li>
           </ul>
         </div>
       </div>
 
-      <div class="info-box violet">
-        <div class="icon">🎯</div>
-        <div class="content">
-          <div class="label">The #1 Exam Answer</div>
-          <p>The <strong>main difference</strong> between Raspberry Pi and other microcontrollers: Raspberry Pi is a <strong>microprocessor / Single Board Computer (SBC)</strong> that can run a <strong>full operating system (Linux)</strong>, has 1–8 GB RAM, and can perform complex tasks like ML and image processing. Arduino and ESP32 are <strong>microcontrollers</strong> that run bare-metal code for dedicated tasks.</p>
-        </div>
-      </div>
-
-      <h3>When to Choose Each? (3-mark answer format)</h3>
-      <div class="grid-2">
-        <div class="card">
-          <h3 class="text-cyan">Use ESP32 over Raspberry Pi when:</h3>
-          <ul>
-            <li>You need <strong>low cost</strong> wireless IoT solution</li>
-            <li>The task is <strong>simple sensor monitoring</strong> + data transmission</li>
-            <li>You need <strong>long battery life</strong> (low power)</li>
-            <li>No OS needed — just WiFi + simple logic</li>
-          </ul>
-        </div>
-        <div class="card">
-          <h3 style="color:var(--accent-violet)">Use Raspberry Pi when:</h3>
-          <ul>
-            <li>You need <strong>complex computing</strong> (ML, computer vision)</li>
-            <li>Running a <strong>full server or web app</strong></li>
-            <li>You need to run <strong>multiple applications</strong></li>
-            <li>High processing power required</li>
-          </ul>
-        </div>
-      </div>
-
-      <h3>Home Security System Scenario</h3>
+      <h3>Home Security System Scenario (exam-style 3-mark question)</h3>
       <div class="info-box emerald">
         <div class="icon">🏠</div>
         <div class="content">
-          <div class="label">Microcontroller vs Microprocessor Role</div>
-          <p><strong>Sensor Nodes</strong> → Use <strong>microcontrollers</strong> (Arduino/ESP32): low power, simple task (detect motion, read door sensor), cheap to deploy many units.<br><br>
-          <strong>Central Monitoring Unit</strong> → Use <strong>Raspberry Pi (microprocessor)</strong>: receives all data, runs web dashboard, processes video, sends alerts — needs full OS and computing power.</p>
+          <div class="label">Use Both Types Together</div>
+          <p><strong>Sensor Nodes</strong> → Use <strong>microcontrollers</strong> (Arduino/ESP32): low power, simple task (detect motion), cheap, run on battery.<br><br>
+          <strong>Central Hub</strong> → Use <strong>Raspberry Pi (microprocessor)</strong>: receives all sensor data, runs web dashboard, processes camera feeds, sends email alerts — needs full OS and computing power.</p>
         </div>
       </div>
     </section>
 
     <!-- RPI OVERVIEW -->
     <section id="rpi-overview">
-      <h2>🍓 Raspberry Pi Overview</h2>
-      <p>Raspberry Pi is a <strong>credit card-sized minicomputer</strong> designed for education and prototyping. It has a motherboard-like design but without peripherals — you connect your own keyboard, mouse, and display.</p>
-
+      <h2>🍓 Raspberry Pi 5 Overview</h2>
+      <p>Raspberry Pi 5 is the latest and most powerful Raspberry Pi. It's a <strong>credit card-sized Single Board Computer (SBC)</strong> that runs a full Linux OS. It has a motherboard-like design — you connect your own keyboard, mouse, and display.</p>
       <ul>
-        <li>Compatible with <strong>Linux OS</strong> (Raspberry Pi OS)</li>
-        <li>Requires a <strong>microSD card</strong> for storage and OS</li>
-        <li>Interoperable with any input/output hardware</li>
+        <li>Compatible with <strong>Raspberry Pi OS (Linux-based)</strong></li>
+        <li>Requires a <strong>microSD card</strong> for storage and OS boot</li>
         <li>Can run both <strong>32-bit and 64-bit programs</strong></li>
+        <li>Interoperable with any input/output hardware via GPIO</li>
+        <li>Powered by USB-C (5V / 5A)</li>
       </ul>
     </section>
 
-    <!-- PI 4B FEATURES -->
-    <section id="rpi4b-features">
-      <h2>⚙️ Raspberry Pi 4 Model B — Full Specs</h2>
-
-      <div class="table-wrapper">
-        <table class="pin-table">
-          <thead>
-            <tr><th>Spec</th><th>Value</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>CPU</td><td>Broadcom BCM2711, Quad-core Cortex-A72 (ARM v8) 64-bit @ 1.5GHz</td></tr>
-            <tr><td>RAM</td><td>2GB, 4GB or 8GB LPDDR4-3200 SDRAM</td></tr>
-            <tr><td>WiFi</td><td>2.4 GHz and 5.0 GHz IEEE 802.11ac wireless</td></tr>
-            <tr><td>Bluetooth</td><td>Bluetooth 5.0 + BLE</td></tr>
-            <tr><td>Ethernet</td><td>Gigabit Ethernet (full throughput)</td></tr>
-            <tr><td>USB Ports</td><td>2× USB 3.0 (blue) + 2× USB 2.0 (black)</td></tr>
-            <tr><td>GPIO</td><td>Standard 40-pin GPIO header</td></tr>
-            <tr><td>HDMI</td><td>2× micro-HDMI ports (up to 4K 60fps)</td></tr>
-            <tr><td>Camera</td><td>2-lane MIPI CSI camera port</td></tr>
-            <tr><td>Display</td><td>2-lane MIPI DSI display port</td></tr>
-            <tr><td>Audio</td><td>4-pole stereo audio and composite video port</td></tr>
-            <tr><td>Storage</td><td>Micro-SD card slot (OS + data)</td></tr>
-            <tr><td>Power</td><td>5V DC via USB-C connector (minimum 3A)</td></tr>
-            <tr><td>Temperature</td><td>0–50°C operating ambient</td></tr>
-          </tbody>
-        </table>
+    <!-- BOARD DIAGRAM -->
+    <section id="board-diagram">
+      <h2>📸 Raspberry Pi Board Diagram</h2>
+      <div class="diagram-img-wrap">
+        <img src="images/rassberry.jpg" alt="Raspberry Pi board showing 40-pin GPIO header, USB ports, HDMI, CSI camera port, and power connector">
+        <div class="img-caption">Raspberry Pi Board — 40-pin GPIO header (top-left), USB ports, HDMI, USB-C power, and CSI camera connector</div>
+      </div>
+      <div class="info-box violet">
+        <div class="icon">🎯</div>
+        <div class="content">
+          <div class="label">Key Board Points</div>
+          <p><strong>40-pin GPIO header</strong> = top-left corner &nbsp;|&nbsp; <strong>GPIO HIGH = 3.3V</strong> (NOT 5V like Arduino)<br>
+          <strong>CSI port</strong> = camera connector &nbsp;|&nbsp; <strong>USB-C</strong> = power input (5V/5A for Pi 5)<br>
+          <strong>MicroSD slot</strong> = bottom side (OS + storage)</p>
+        </div>
       </div>
     </section>
 
-    <!-- HISTORY -->
-    <section id="history">
-      <h2>📅 Raspberry Pi Launch History</h2>
-      <div class="timeline">
-        <div class="timeline-item">
-          <div class="timeline-date">February 2012</div>
-          <h4>Raspberry Pi Model B — The Original</h4>
-          <p>First iteration with ARM11 processor. Credit card-sized form factor. Also released: simpler Model A.</p>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-date">2014</div>
-          <h4>Model B+ / A+ Enhanced Design</h4>
-          <p>Improved layout, more USB ports, better GPIO. Same ARM11 cores.</p>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-date">February 2015</div>
-          <h4>Raspberry Pi 2</h4>
-          <p>900 MHz quad-core ARM Cortex-A7, 1 GB RAM. First quad-core Pi.</p>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-date">February 2016</div>
-          <h4>Raspberry Pi 3 Model B</h4>
-          <p>1.2 GHz quad-core ARM Cortex-A53. Added <strong>onboard 802.11n WiFi and Bluetooth</strong>. Game changer.</p>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-date">2018</div>
-          <h4>Raspberry Pi 3 Model B+</h4>
-          <p>1.4 GHz CPU, dual-band 802.11ac WiFi, PoE support, faster Ethernet.</p>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-date">June 2019</div>
-          <h4>Raspberry Pi 4 Model B ⭐ (What we use in lab)</h4>
-          <p>1.5 GHz quad-core ARM Cortex-A72. Full gigabit Ethernet, USB 3.0, 1–8GB RAM, dual 4K HDMI, USB-C power, BT 5.0.</p>
+    <!-- PI 5 SPECS -->
+    <section id="rpi5-features">
+      <h2>⚙️ Raspberry Pi 5 — Full Specifications</h2>
+      <div class="table-wrapper">
+        <table class="pin-table">
+          <thead><tr><th>Specification</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>CPU</td><td>Broadcom BCM2712, Quad-core Cortex-A76 @ 2.4 GHz (64-bit)</td></tr>
+            <tr><td>RAM</td><td>4 GB or 8 GB LPDDR4X-4267 SDRAM</td></tr>
+            <tr><td>WiFi</td><td>Dual-band 802.11ac (2.4 GHz and 5 GHz)</td></tr>
+            <tr><td>Bluetooth</td><td>Bluetooth 5.0 + BLE</td></tr>
+            <tr><td>Ethernet</td><td>Gigabit Ethernet (PoE+ supported)</td></tr>
+            <tr><td>USB Ports</td><td>2× USB 3.0 (blue) + 2× USB 2.0 (black)</td></tr>
+            <tr><td>GPIO</td><td>Standard 40-pin GPIO header</td></tr>
+            <tr><td>Display/Camera</td><td>2× MIPI CSI/DSI ports (camera or display)</td></tr>
+            <tr><td>HDMI</td><td>2× micro-HDMI (up to 4Kp60)</td></tr>
+            <tr><td>PCIe</td><td>PCIe 2.0 ×1 FFC connector (new in Pi 5!)</td></tr>
+            <tr><td>Storage</td><td>MicroSD card (UHS-I) + NVMe via PCIe</td></tr>
+            <tr><td>Power</td><td>5V / 5A USB-C (27W recommended)</td></tr>
+            <tr><td>RTC</td><td>Real-Time Clock with battery connector</td></tr>
+            <tr><td>GPIO Voltage</td><td>HIGH = 3.3V, LOW = 0V</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="info-box cyan">
+        <div class="icon">✨</div>
+        <div class="content">
+          <div class="label">Pi 5 vs Pi 4 Key Improvements</div>
+          <p>Pi 5 (2023): <strong>2× faster CPU</strong> (A76 @ 2.4GHz vs A72 @ 1.5GHz) · <strong>PCIe 2.0</strong> for NVMe SSD · <strong>RTC</strong> built-in · <strong>RP1 I/O chip</strong> — completely redesigned I/O · Better camera support · New power button</p>
         </div>
       </div>
     </section>
@@ -289,68 +211,47 @@
     <!-- GPIO -->
     <section id="gpio">
       <h2>📌 GPIO Pins — General Purpose Input/Output</h2>
-      <p>GPIO (General Purpose Input/Output) pins are versatile interfaces for connecting the Raspberry Pi to electronic components (LEDs, motors, sensors). They allow <strong>two-way exchange of information</strong>.</p>
+      <p>GPIO pins let Raspberry Pi control and communicate with external electronics (LEDs, buttons, sensors). They provide <strong>two-way exchange of information</strong> between software and hardware.</p>
 
       <div class="info-box violet">
         <div class="icon">⚡</div>
         <div class="content">
-          <div class="label">GPIO Voltage Levels</div>
-          <p>GPIO pins: <strong>HIGH = 3.3V</strong> (turns component ON), <strong>LOW = 0V</strong> (turns component OFF). Unlike Arduino which uses 5V for HIGH!</p>
+          <div class="label">GPIO Voltage — CRITICAL to know!</div>
+          <p>Raspberry Pi GPIO: <strong>HIGH = 3.3V</strong>, <strong>LOW = 0V</strong><br>
+          Arduino GPIO: <strong>HIGH = 5V</strong>, <strong>LOW = 0V</strong><br>
+          ⚠️ <strong>NEVER connect 5V directly to Pi GPIO</strong> — it will damage the Pi!</p>
         </div>
       </div>
 
-      <h3>GPIO Numbering</h3>
-      <p>There are <strong>two ways</strong> to refer to GPIO pins:</p>
+      <h3>GPIO Numbering Systems</h3>
       <ul>
-        <li><strong>GPIO Numbering (BCM/Broadcom)</strong> — Used in code. e.g., GPIO 14, GPIO 25. This is what gpiozero uses.</li>
-        <li><strong>Physical Pin Number</strong> — The physical location on the 40-pin header. e.g., GPIO 25 = Physical Pin 22.</li>
+        <li><strong>BCM (Broadcom) Numbering</strong> — used in code. e.g., GPIO14, GPIO25. This is what gpiozero uses.</li>
+        <li><strong>Physical Pin Number</strong> — the actual position on the 40-pin header. GPIO14 = Physical Pin 8.</li>
+        <li>In the lab we always use <strong>BCM numbering</strong> in code.</li>
       </ul>
 
       <div class="highlight">
-        <p>⚠️ <strong>Exam Alert:</strong> In the lab we use <strong>BCM (Broadcom) numbering</strong> in code. GPIO 14 corresponds to physical pin 8. <strong>Cannot use GPIO 0 and GPIO 1</strong> for LED circuits.</p>
+        <p>⚠️ <strong>Cannot use GPIO 0 and GPIO 1</strong> for LED circuits — they are reserved for I2C EEPROM ID. Use GPIO 2 and above.</p>
       </div>
 
       <h3>40-Pin GPIO Header — Key Pins</h3>
       <div class="gpio-grid">
-        <div class="gpio-item gpio-power">
-          <div class="gpio-num">Pin 1, 17</div>
-          <div class="gpio-name">3.3V</div>
-          <div class="gpio-type">Power</div>
-        </div>
-        <div class="gpio-item gpio-power">
-          <div class="gpio-num">Pin 2, 4</div>
-          <div class="gpio-name">5V</div>
-          <div class="gpio-type">Power</div>
-        </div>
-        <div class="gpio-item gpio-gnd">
-          <div class="gpio-num">Pins 6,9,14,20,25,30,34,39</div>
-          <div class="gpio-name">GND</div>
-          <div class="gpio-type">Ground (0V)</div>
-        </div>
-        <div class="gpio-item gpio-io">
-          <div class="gpio-num">Pin 8</div>
-          <div class="gpio-name">GPIO 14</div>
-          <div class="gpio-type">UART TX / GPIO</div>
-        </div>
-        <div class="gpio-item gpio-io">
-          <div class="gpio-num">Pin 10</div>
-          <div class="gpio-name">GPIO 15</div>
-          <div class="gpio-type">UART RX / GPIO</div>
-        </div>
-        <div class="gpio-item gpio-io">
-          <div class="gpio-num">Pin 3</div>
-          <div class="gpio-name">GPIO 2</div>
-          <div class="gpio-type">I2C SDA1</div>
-        </div>
-        <div class="gpio-item gpio-io">
-          <div class="gpio-num">Pin 5</div>
-          <div class="gpio-name">GPIO 3</div>
-          <div class="gpio-type">I2C SCL1</div>
-        </div>
-        <div class="gpio-item gpio-io">
-          <div class="gpio-num">Pin 22</div>
-          <div class="gpio-name">GPIO 25</div>
-          <div class="gpio-type">Digital I/O</div>
+        <div class="gpio-item gpio-power"><div class="gpio-num">Pin 1, 17</div><div class="gpio-name">3.3V</div><div class="gpio-type">Power out</div></div>
+        <div class="gpio-item gpio-power"><div class="gpio-num">Pin 2, 4</div><div class="gpio-name">5V</div><div class="gpio-type">Power out</div></div>
+        <div class="gpio-item gpio-gnd"><div class="gpio-num">Pins 6,9,14,20,25,30,34,39</div><div class="gpio-name">GND</div><div class="gpio-type">Ground (0V)</div></div>
+        <div class="gpio-item gpio-io"><div class="gpio-num">Pin 8</div><div class="gpio-name">GPIO 14</div><div class="gpio-type">UART TX / GPIO</div></div>
+        <div class="gpio-item gpio-io"><div class="gpio-num">Pin 3</div><div class="gpio-name">GPIO 2</div><div class="gpio-type">I2C SDA1</div></div>
+        <div class="gpio-item gpio-io"><div class="gpio-num">Pin 5</div><div class="gpio-name">GPIO 3</div><div class="gpio-type">I2C SCL1</div></div>
+        <div class="gpio-item gpio-io"><div class="gpio-num">Pin 22</div><div class="gpio-name">GPIO 25</div><div class="gpio-type">Digital I/O</div></div>
+        <div class="gpio-item gpio-io"><div class="gpio-num">Pin 11</div><div class="gpio-name">GPIO 17</div><div class="gpio-type">Digital I/O</div></div>
+      </div>
+
+      <h3>GND Pin Function (exam question!)</h3>
+      <div class="info-box amber">
+        <div class="icon">🔌</div>
+        <div class="content">
+          <div class="label">What does the GND pin do?</div>
+          <p>GND (Ground) is the <strong>0V reference point</strong> for all circuits. It <strong>completes the electrical circuit</strong> — current flows from the voltage source (3.3V or 5V), through the component, and returns to GND. Without GND, no circuit works.</p>
         </div>
       </div>
     </section>
@@ -358,59 +259,52 @@
     <!-- SETUP -->
     <section id="setup">
       <h2>🛠️ Setting Up Raspberry Pi</h2>
-
       <h3>Required Hardware</h3>
       <ul>
-        <li>Raspberry Pi 4 Model B board</li>
-        <li>USB-C power supply (minimum 3A / 5V)</li>
-        <li>MicroSD card (minimum 8GB)</li>
+        <li>Raspberry Pi 5 board</li>
+        <li>USB-C power supply (5V / 5A — 27W recommended for Pi 5)</li>
+        <li>MicroSD card (minimum 8GB, Class 10)</li>
         <li>USB Keyboard + USB Mouse</li>
-        <li>TV or monitor with HDMI + micro-HDMI cable</li>
+        <li>Monitor with micro-HDMI cable</li>
       </ul>
-
-      <h3>OS Installation Steps</h3>
+      <h3>OS Installation (Raspberry Pi Imager)</h3>
       <div class="steps">
-        <div class="step-item">
-          <div class="step-num">1</div>
-          <div class="step-content">
-            <h4>Download Raspberry Pi Imager</h4>
-            <p>Visit raspberrypi.com/software, download the Imager for your computer's OS.</p>
-          </div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">2</div>
-          <div class="step-content">
-            <h4>Flash the SD Card</h4>
-            <p>Insert microSD into your computer. In Imager: select OS (Raspberry Pi OS) → select SD card → click WRITE.</p>
-          </div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">3</div>
-          <div class="step-content">
-            <h4>Connect Hardware</h4>
-            <p>Insert SD card into Pi. Connect mouse, keyboard, HDMI to <strong>HDMI0 port</strong> (nearest to power port). Connect power last.</p>
-          </div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">4</div>
-          <div class="step-content">
-            <h4>Power On &amp; Setup</h4>
-            <p>Pi boots automatically. Follow Welcome wizard: set Country, Language, Timezone, password, WiFi. Update software. Restart.</p>
-          </div>
-        </div>
+        <div class="step-item"><div class="step-num">1</div><div class="step-content"><h4>Download Raspberry Pi Imager</h4><p>Visit raspberrypi.com/software → download Imager for your OS (Windows/Mac/Linux).</p></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-content"><h4>Flash SD Card</h4><p>Insert microSD into computer. In Imager: Choose Device → Choose OS (Raspberry Pi OS) → Choose Storage (SD card) → Write.</p></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-content"><h4>Connect Hardware</h4><p>Insert SD card. Connect mouse, keyboard, micro-HDMI to <strong>HDMI0 port</strong> (nearest power). Connect power last.</p></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-content"><h4>Setup Wizard</h4><p>Pi boots → follow welcome wizard: set Country, Language, Timezone, password, WiFi. Update software. Restart.</p></div></div>
       </div>
     </section>
 
     <!-- GPIOZERO -->
     <section id="gpiozero">
-      <h2>🐍 gpiozero Library</h2>
-      <p>The <strong>gpiozero</strong> library is a Python library that provides easy-to-use interfaces for common components: LEDs, buttons, sensors, motors.</p>
+      <h2>🐍 gpiozero Library — Key Functions</h2>
+      <p>The <strong>gpiozero</strong> library provides easy Python interfaces for electronics. Pre-installed on Raspberry Pi OS.</p>
 
       <h3>LED Wiring for Lab</h3>
       <div class="wiring-box">
-<span class="comp">LED (+) anode</span>   <span class="arrow">→</span>  <span class="pin">220Ω resistor → GPIO 14 (Pin 8)</span>
+<span class="comp">LED (+) anode</span>    <span class="arrow">→</span>  <span class="pin">220Ω resistor → GPIO 14 (Pin 8)</span>
 <span class="comp">LED (-) cathode</span>  <span class="arrow">→</span>  <span class="pin">GND (Pin 6)</span>
-<span class="cm">Note: Can use any GPIO except GPIO 0 and GPIO 1</span>
+<span class="cm">Note: Can use any GPIO number ≥ 2 (avoid GPIO 0 and GPIO 1)</span>
+      </div>
+
+      <h3>gpiozero LED Functions — Know These!</h3>
+      <div class="table-wrapper">
+        <table class="pin-table">
+          <thead><tr><th>Function/Property</th><th>What it does</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>LED(pin)</td><td>Create an LED object on given GPIO pin</td><td><code>led = LED(14)</code></td></tr>
+            <tr><td>led.on()</td><td>Set GPIO HIGH (3.3V) → LED turns ON</td><td><code>led.on()</code></td></tr>
+            <tr><td>led.off()</td><td>Set GPIO LOW (0V) → LED turns OFF</td><td><code>led.off()</code></td></tr>
+            <tr><td>led.toggle()</td><td>Reverses current state (ON→OFF or OFF→ON)</td><td><code>led.toggle()</code></td></tr>
+            <tr><td>led.blink()</td><td>Automatically blinks LED (background thread)</td><td><code>led.blink(on_time=1, off_time=1)</code></td></tr>
+            <tr><td>Button(pin)</td><td>Create a button object (with internal pull-up)</td><td><code>btn = Button(2)</code></td></tr>
+            <tr><td>button.is_pressed</td><td>True if button is pressed, else False</td><td><code>if button.is_pressed:</code></td></tr>
+            <tr><td>button.when_pressed</td><td>Assign a function to run when pressed</td><td><code>button.when_pressed = led.on</code></td></tr>
+            <tr><td>button.when_released</td><td>Assign a function to run when released</td><td><code>button.when_released = led.off</code></td></tr>
+            <tr><td>pause()</td><td>Keep script running forever (from signal import pause)</td><td><code>pause()</code></td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
@@ -418,22 +312,22 @@
     <section id="python-code">
       <h2>🐍 Python Code Examples</h2>
 
-      <h3>Blink LED with gpiozero</h3>
+      <h3>Basic LED Blink with sleep()</h3>
       <div class="code-block">
         <div class="code-header"><div class="code-lang">Python 3</div><span>blinking_led.py</span></div>
         <div class="code-body"><span class="kw">from</span> gpiozero <span class="kw">import</span> LED
 <span class="kw">from</span> time <span class="kw">import</span> sleep
 
-led = <span class="fn">LED</span>(<span class="num">14</span>)        <span class="cm"># GPIO 14 (BCM numbering)</span>
+led = <span class="fn">LED</span>(<span class="num">14</span>)        <span class="cm"># GPIO 14 (BCM numbering) = Physical Pin 8</span>
 
-<span class="kw">while</span> <span class="kw">True</span>:
-    led.<span class="fn">on</span>()          <span class="cm"># turn LED ON (3.3V HIGH)</span>
+<span class="kw">while</span> <span class="kw">True</span>:           <span class="cm"># infinite loop</span>
+    led.<span class="fn">on</span>()          <span class="cm"># GPIO 14 → 3.3V → LED ON</span>
     <span class="fn">sleep</span>(<span class="num">1</span>)           <span class="cm"># wait 1 second</span>
-    led.<span class="fn">off</span>()         <span class="cm"># turn LED OFF (0V LOW)</span>
+    led.<span class="fn">off</span>()         <span class="cm"># GPIO 14 → 0V → LED OFF</span>
     <span class="fn">sleep</span>(<span class="num">1</span>)           <span class="cm"># wait 1 second</span></div>
       </div>
 
-      <h3>Using toggle() — Simpler Blink</h3>
+      <h3>Simpler Blink with toggle()</h3>
       <div class="code-block">
         <div class="code-header"><div class="code-lang">Python 3</div><span>toggle method</span></div>
         <div class="code-body"><span class="kw">from</span> gpiozero <span class="kw">import</span> LED
@@ -442,89 +336,118 @@ led = <span class="fn">LED</span>(<span class="num">14</span>)        <span clas
 led = <span class="fn">LED</span>(<span class="num">14</span>)
 
 <span class="kw">while</span> <span class="kw">True</span>:
-    led.<span class="fn">toggle</span>()     <span class="cm"># reverses current state (ON→OFF or OFF→ON)</span>
+    led.<span class="fn">toggle</span>()  <span class="cm"># ON→OFF or OFF→ON (reverses state)</span>
     <span class="fn">sleep</span>(<span class="num">1</span>)</div>
       </div>
 
-      <h3>Button + LED (Lab Report Task 1)</h3>
+      <h3>Button Controlling LED (when_pressed / when_released)</h3>
       <div class="code-block">
         <div class="code-header"><div class="code-lang">Python 3</div><span>button_led.py</span></div>
         <div class="code-body"><span class="kw">from</span> gpiozero <span class="kw">import</span> LED, Button
 <span class="kw">from</span> signal <span class="kw">import</span> pause
 
-led = <span class="fn">LED</span>(<span class="num">14</span>)        <span class="cm"># GPIO 14</span>
-button = <span class="fn">Button</span>(<span class="num">2</span>)   <span class="cm"># GPIO 2 (with internal pull-up)</span>
+led    = <span class="fn">LED</span>(<span class="num">14</span>)       <span class="cm"># LED on GPIO 14</span>
+button = <span class="fn">Button</span>(<span class="num">2</span>)    <span class="cm"># Button on GPIO 2 (internal pull-up)</span>
 
 button.when_pressed  = led.on   <span class="cm"># LED ON when button pressed</span>
 button.when_released = led.off  <span class="cm"># LED OFF when released</span>
 
-<span class="fn">pause</span>()              <span class="cm"># keep script running</span></div>
+<span class="fn">pause</span>()  <span class="cm"># keep the script running forever (waits for events)</span></div>
       </div>
 
       <div class="info-box cyan">
-        <div class="icon">📦</div>
+        <div class="icon">🔌</div>
         <div class="content">
-          <div class="label">Install gpiozero</div>
-          <p>gpiozero is pre-installed on Raspberry Pi OS. If not: <code>python3 -m pip install gpiozero</code></p>
+          <div class="label">Why pause() at the end?</div>
+          <p>Without <code>pause()</code>, the script would exit immediately after setting up the button callbacks. <code>pause()</code> keeps the program alive to listen for button press events indefinitely.</p>
         </div>
       </div>
 
-      <h3>Raspberry Pi vs Arduino — Why GPIO?</h3>
+      <h3>Multiple LEDs (Traffic Light pattern)</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">Python 3</div><span>multiple_leds.py</span></div>
+        <div class="code-body"><span class="kw">from</span> gpiozero <span class="kw">import</span> LED
+<span class="kw">from</span> time <span class="kw">import</span> sleep
+
+red   = <span class="fn">LED</span>(<span class="num">14</span>)
+amber = <span class="fn">LED</span>(<span class="num">15</span>)
+green = <span class="fn">LED</span>(<span class="num">18</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    red.<span class="fn">on</span>();   <span class="fn">sleep</span>(<span class="num">2</span>)   <span class="cm"># Red for 2 seconds</span>
+    red.<span class="fn">off</span>()
+    amber.<span class="fn">on</span>(); <span class="fn">sleep</span>(<span class="num">1</span>)   <span class="cm"># Amber for 1 second</span>
+    amber.<span class="fn">off</span>()
+    green.<span class="fn">on</span>(); <span class="fn">sleep</span>(<span class="num">2</span>)   <span class="cm"># Green for 2 seconds</span>
+    green.<span class="fn">off</span>()</div>
+      </div>
+
       <div class="info-box violet">
         <div class="icon">❓</div>
         <div class="content">
-          <div class="label">Why GPIO Pins on Raspberry Pi?</div>
-          <p>GPIO pins allow the Raspberry Pi to interface with and control external electronic components (LEDs, motors, sensors). Without GPIO, the Pi would be limited to purely software tasks. GPIO enables <strong>physical world interaction</strong> — bridging software and hardware.</p>
+          <div class="label">Why does Raspberry Pi have GPIO pins?</div>
+          <p>GPIO pins allow the Raspberry Pi to <strong>interface with the physical world</strong> — controlling LEDs, reading sensors, driving motors. Without GPIO, the Pi would be limited to software-only tasks. GPIO bridges software and hardware, enabling IoT and embedded projects.</p>
         </div>
       </div>
     </section>
 
-    <!-- QUIZ -->
+    <!-- QUIZ — history questions removed -->
     <section id="quiz">
-      <h2>🧠 Quick Quiz — Test Yourself</h2>
+      <h2>🧠 Quick Quiz</h2>
 
       <div class="quiz-card">
-        <div class="quiz-q">Q1. What is the main difference between Raspberry Pi and other microcontrollers like Arduino?</div>
+        <div class="quiz-q">Q1. What is the main difference between Raspberry Pi and Arduino in terms of type?</div>
         <div class="quiz-options">
-          <button class="quiz-option" onclick="checkAnswer(this, false)">A) Raspberry Pi is smaller</button>
-          <button class="quiz-option" onclick="checkAnswer(this, false)">B) Raspberry Pi has more GPIO pins</button>
-          <button class="quiz-option" onclick="checkAnswer(this, true)">C) Raspberry Pi is a microprocessor that can run a full operating system (Linux)</button>
-          <button class="quiz-option" onclick="checkAnswer(this, false)">D) Raspberry Pi has better sensors</button>
+          <button class="quiz-option" data-correct="false">A) Raspberry Pi is smaller and cheaper</button>
+          <button class="quiz-option" data-correct="true">B) Raspberry Pi is a microprocessor SBC that runs a full OS; Arduino is a microcontroller</button>
+          <button class="quiz-option" data-correct="false">C) Raspberry Pi has more analog pins</button>
+          <button class="quiz-option" data-correct="false">D) Arduino has more RAM</button>
         </div>
-        <div class="quiz-result">Raspberry Pi is a microprocessor / SBC that runs Linux OS, has 1-8GB RAM, and can handle complex computing tasks — unlike microcontrollers. ✓</div>
+        <div class="quiz-result">Raspberry Pi = microprocessor / SBC → runs Linux OS, 4–8GB RAM, complex computing. Arduino = microcontroller → no OS, 2KB RAM, dedicated tasks. ✓</div>
       </div>
 
       <div class="quiz-card">
-        <div class="quiz-q">Q2. What does the GND pin on a microcontroller do?</div>
+        <div class="quiz-q">Q2. What voltage level does a HIGH signal on Raspberry Pi GPIO produce?</div>
         <div class="quiz-options">
-          <button class="quiz-option" onclick="checkAnswer(this, false)">A) Sends output data</button>
-          <button class="quiz-option" onclick="checkAnswer(this, false)">B) Sends digital data</button>
-          <button class="quiz-option" onclick="checkAnswer(this, true)">C) Acts as a reference for 0V (ground)</button>
-          <button class="quiz-option" onclick="checkAnswer(this, false)">D) Controls the sensor</button>
+          <button class="quiz-option" data-correct="false">A) 5V</button>
+          <button class="quiz-option" data-correct="true">B) 3.3V</button>
+          <button class="quiz-option" data-correct="false">C) 1.8V</button>
+          <button class="quiz-option" data-correct="false">D) 0V</button>
         </div>
-        <div class="quiz-result">GND is the ground reference (0V). All circuits need a common ground to complete the circuit. ✓</div>
+        <div class="quiz-result">Raspberry Pi GPIO HIGH = 3.3V. Arduino HIGH = 5V. Never connect 5V signals to Pi GPIO! ✓</div>
       </div>
 
       <div class="quiz-card">
-        <div class="quiz-q">Q3. What is the voltage level for HIGH state on Raspberry Pi GPIO pins?</div>
+        <div class="quiz-q">Q3. What does the GND pin on a microcontroller do?</div>
         <div class="quiz-options">
-          <button class="quiz-option" onclick="checkAnswer(this, false)">A) 5V</button>
-          <button class="quiz-option" onclick="checkAnswer(this, true)">B) 3.3V</button>
-          <button class="quiz-option" onclick="checkAnswer(this, false)">C) 1.8V</button>
-          <button class="quiz-option" onclick="checkAnswer(this, false)">D) 0V</button>
+          <button class="quiz-option" data-correct="false">A) Sends output data signals</button>
+          <button class="quiz-option" data-correct="false">B) Powers the board</button>
+          <button class="quiz-option" data-correct="true">C) Acts as the 0V reference — completes the circuit</button>
+          <button class="quiz-option" data-correct="false">D) Controls sensor readings</button>
         </div>
-        <div class="quiz-result">Raspberry Pi GPIO HIGH = 3.3V (unlike Arduino which uses 5V for HIGH) ✓</div>
+        <div class="quiz-result">GND = Ground = 0V reference. All circuits need a common ground — current flows from +voltage through components and returns to GND. ✓</div>
       </div>
 
       <div class="quiz-card">
-        <div class="quiz-q">Q4. Which Python method in gpiozero reverses the current state of a GPIO pin?</div>
+        <div class="quiz-q">Q4. Which Python method from gpiozero reverses the current state of an LED?</div>
         <div class="quiz-options">
-          <button class="quiz-option" onclick="checkAnswer(this, false)">A) led.flip()</button>
-          <button class="quiz-option" onclick="checkAnswer(this, false)">B) led.switch()</button>
-          <button class="quiz-option" onclick="checkAnswer(this, true)">C) led.toggle()</button>
-          <button class="quiz-option" onclick="checkAnswer(this, false)">D) led.reverse()</button>
+          <button class="quiz-option" data-correct="false">A) led.flip()</button>
+          <button class="quiz-option" data-correct="false">B) led.switch()</button>
+          <button class="quiz-option" data-correct="true">C) led.toggle()</button>
+          <button class="quiz-option" data-correct="false">D) led.reverse()</button>
         </div>
-        <div class="quiz-result">toggle() reverses the current state — ON becomes OFF, OFF becomes ON. ✓</div>
+        <div class="quiz-result">toggle() reverses the state — ON becomes OFF, OFF becomes ON. Perfect for blinking with sleep(). ✓</div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-q">Q5. Why is the Raspberry Pi preferred over ESP32 for an image processing application?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" data-correct="false">A) Raspberry Pi is cheaper</button>
+          <button class="quiz-option" data-correct="false">B) Raspberry Pi has more ADC channels</button>
+          <button class="quiz-option" data-correct="true">C) Raspberry Pi has a powerful CPU, GB of RAM, and can run Python libraries like OpenCV and TensorFlow</button>
+          <button class="quiz-option" data-correct="false">D) Raspberry Pi has better WiFi</button>
+        </div>
+        <div class="quiz-result">Image processing needs a powerful CPU (2.4GHz), lots of RAM (4–8GB), and a full OS to run complex Python libraries (OpenCV, TFLite). ESP32 lacks all of these. ✓</div>
       </div>
     </section>
 
@@ -532,24 +455,15 @@ button.when_released = led.off  <span class="cm"># LED OFF when released</span>
 </div>
 
 <footer>
-  <p>Experiment 3 — Raspberry Pi Intro | <a href="ex_2.html" style="color:var(--accent-cyan)">← Ex 2: ESP32</a> | <a href="ex_4.html" style="color:var(--accent-cyan)">Ex 4: Pi Camera →</a></p>
+  <p>Experiment 3 — Raspberry Pi 5 Intro &nbsp;|&nbsp; <a href="ex_2.html" style="color:var(--accent-cyan)">← Ex 2</a> &nbsp;|&nbsp; <a href="ex_4.html" style="color:var(--accent-cyan)">Ex 4: Pi Camera →</a></p>
 </footer>
 
+<script src="nav.js"></script>
 <script>
-  window.addEventListener('scroll', () => {
-    const winScroll = document.documentElement.scrollTop;
-    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    document.getElementById('progressBar').style.width = ((winScroll / height) * 100) + '%';
-  });
-  function toggleAcc(btn) { btn.closest('.accordion-item').classList.toggle('open'); }
-  function checkAnswer(btn, isCorrect) {
-    const card = btn.closest('.quiz-card');
-    if (card.querySelector('.correct, .wrong')) return;
-    btn.classList.add(isCorrect ? 'correct' : 'wrong');
-    const result = card.querySelector('.quiz-result');
-    result.classList.add('show', isCorrect ? 'correct-msg' : 'wrong-msg');
-    if (!isCorrect) card.querySelectorAll('.quiz-option').forEach(o => { if(o !== btn) o.style.opacity='0.5'; });
-  }
+  initNav('ex_3.html');
+  initProgress();
+  initAccordions();
+  initQuiz();
 </script>
 </body>
 </html>

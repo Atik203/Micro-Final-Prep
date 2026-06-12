@@ -215,7 +215,21 @@
       <li><a href="ex_4.html">Ex 4: Pi Camera</a></li>
       <li><a href="hardware.html" class="active">🔧 Hardware</a></li>
     </ul>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
   </div>
+</nav>
+<div class="nav-overlay" id="navOverlay"></div>
+<nav class="nav-drawer" id="navDrawer">
+  <div class="drawer-header"><span class="drawer-brand">⚡ MicroLab Prep</span><button class="drawer-close" id="drawerClose">✕</button></div>
+  <div class="drawer-label">Study Chapters</div>
+  <ul class="drawer-links">
+    <li><a href="index.html"><span class="link-icon">🏠</span> Home</a></li>
+    <li><a href="ex_1.html"><span class="link-icon">🤖</span> Ex 1: Arduino &amp; Gas Sensor</a></li>
+    <li><a href="ex_2.html"><span class="link-icon">📡</span> Ex 2: ESP32 &amp; XAMPP</a></li>
+    <li><a href="ex_3.html"><span class="link-icon">🍓</span> Ex 3: Raspberry Pi Intro</a></li>
+    <li><a href="ex_4.html"><span class="link-icon">📷</span> Ex 4: Pi Camera &amp; ML</a></li>
+    <li><a href="hardware.html" class="active"><span class="link-icon">🔧</span> Hardware Task (5 Marks)</a></li>
+  </ul>
 </nav>
 
 <!-- HARDWARE HERO -->
@@ -710,17 +724,16 @@ String URL = <span class="str">"http://YOUR_IP/dht11_project/testdata.php"</span
   <p style="margin-top:0.5rem">Good luck with the hardware task! You've got this. 💪</p>
 </footer>
 
+<script src="nav.js"></script>
 <script>
-  window.addEventListener('scroll', () => {
-    const winScroll = document.documentElement.scrollTop;
-    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    document.getElementById('progressBar').style.width = ((winScroll / height) * 100) + '%';
+  initNav('hardware.html');
+  initProgress();
+  document.querySelectorAll('.component-item').forEach(item => {
+    item.addEventListener('click', function() {
+      this.classList.toggle('checked');
+      this.querySelector('.check').textContent = this.classList.contains('checked') ? '✓' : '';
+    });
   });
-
-  function toggleCheck(item) {
-    item.classList.toggle('checked');
-    item.querySelector('.check').textContent = item.classList.contains('checked') ? '✓' : '';
-  }
 </script>
 </body>
 </html>

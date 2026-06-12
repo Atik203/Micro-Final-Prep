@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Experiment 4 — Pi Camera & Object Detection | Micro Lab Prep</title>
+  <title>Experiment 4 — Pi Camera &amp; Object Detection | Micro Lab Prep</title>
   <meta name="description" content="Study guide for Experiment 4: Raspberry Pi Camera Module, image/video capture, Python picamera, TensorFlow Lite object detection. CSE 4326 Micro Lab.">
   <link rel="stylesheet" href="style.css">
   <style>
@@ -89,7 +89,21 @@
       <li><a href="ex_4.html" class="active">Ex 4: Pi Camera</a></li>
       <li><a href="hardware.html">🔧 Hardware</a></li>
     </ul>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
   </div>
+</nav>
+<div class="nav-overlay" id="navOverlay"></div>
+<nav class="nav-drawer" id="navDrawer">
+  <div class="drawer-header"><span class="drawer-brand">⚡ MicroLab Prep</span><button class="drawer-close" id="drawerClose">✕</button></div>
+  <div class="drawer-label">Study Chapters</div>
+  <ul class="drawer-links">
+    <li><a href="index.html"><span class="link-icon">🏠</span> Home</a></li>
+    <li><a href="ex_1.html"><span class="link-icon">🤖</span> Ex 1: Arduino &amp; Gas Sensor</a></li>
+    <li><a href="ex_2.html"><span class="link-icon">📡</span> Ex 2: ESP32 &amp; XAMPP</a></li>
+    <li><a href="ex_3.html"><span class="link-icon">🍓</span> Ex 3: Raspberry Pi Intro</a></li>
+    <li><a href="ex_4.html" class="active"><span class="link-icon">📷</span> Ex 4: Pi Camera &amp; ML</a></li>
+    <li><a href="hardware.html"><span class="link-icon">🔧</span> Hardware Task (5 Marks)</a></li>
+  </ul>
 </nav>
 
 <div class="page-header">
@@ -503,10 +517,10 @@ camera.contrast = <span class="num">50</span>   <span class="cm"># 0-100, defaul
       <div class="quiz-card">
         <div class="quiz-q">Q1. What library is used in Python to control the Raspberry Pi Camera Module?</div>
         <div class="quiz-options">
-          <button class="quiz-option" onclick="checkAnswer(this, false)">A) opencv-pi</button>
-          <button class="quiz-option" onclick="checkAnswer(this, true)">B) picamera</button>
-          <button class="quiz-option" onclick="checkAnswer(this, false)">C) rpi-camera</button>
-          <button class="quiz-option" onclick="checkAnswer(this, false)">D) gpiozero</button>
+          <button class="quiz-option" data-correct="false">A) opencv-pi</button>
+          <button class="quiz-option" data-correct="true">B) picamera</button>
+          <button class="quiz-option" data-correct="false">C) rpi-camera</button>
+          <button class="quiz-option" data-correct="false">D) gpiozero</button>
         </div>
         <div class="quiz-result">The picamera library provides Python control over the Pi Camera Module ✓</div>
       </div>
@@ -514,10 +528,10 @@ camera.contrast = <span class="num">50</span>   <span class="cm"># 0-100, defaul
       <div class="quiz-card">
         <div class="quiz-q">Q2. What command captures a 10-second video using raspivid?</div>
         <div class="quiz-options">
-          <button class="quiz-option" onclick="checkAnswer(this, false)">A) raspivid -t 10 -o video.h264</button>
-          <button class="quiz-option" onclick="checkAnswer(this, true)">B) raspivid -t 10000 -o Desktop/video.h264</button>
-          <button class="quiz-option" onclick="checkAnswer(this, false)">C) raspistill -t 10000 -o video.mp4</button>
-          <button class="quiz-option" onclick="checkAnswer(this, false)">D) picam record 10 video.h264</button>
+          <button class="quiz-option" data-correct="false">A) raspivid -t 10 -o video.h264</button>
+          <button class="quiz-option" data-correct="true">B) raspivid -t 10000 -o Desktop/video.h264</button>
+          <button class="quiz-option" data-correct="false">C) raspistill -t 10000 -o video.mp4</button>
+          <button class="quiz-option" data-correct="false">D) picam record 10 video.h264</button>
         </div>
         <div class="quiz-result">raspivid -t 10000 -o video.h264 — time is in milliseconds, so 10000ms = 10 seconds ✓</div>
       </div>
@@ -525,10 +539,10 @@ camera.contrast = <span class="num">50</span>   <span class="cm"># 0-100, defaul
       <div class="quiz-card">
         <div class="quiz-q">Q3. What is TensorFlow Lite used for in the object detection experiment?</div>
         <div class="quiz-options">
-          <button class="quiz-option" onclick="checkAnswer(this, false)">A) Taking photos</button>
-          <button class="quiz-option" onclick="checkAnswer(this, false)">B) Connecting to WiFi</button>
-          <button class="quiz-option" onclick="checkAnswer(this, true)">C) Running a lightweight ML model for object detection on the Pi</button>
-          <button class="quiz-option" onclick="checkAnswer(this, false)">D) Installing OpenCV</button>
+          <button class="quiz-option" data-correct="false">A) Taking photos</button>
+          <button class="quiz-option" data-correct="false">B) Connecting to WiFi</button>
+          <button class="quiz-option" data-correct="true">C) Running a lightweight ML model for object detection on the Pi</button>
+          <button class="quiz-option" data-correct="false">D) Installing OpenCV</button>
         </div>
         <div class="quiz-result">TensorFlow Lite is a lightweight ML framework optimized for embedded devices like Raspberry Pi ✓</div>
       </div>
@@ -536,10 +550,10 @@ camera.contrast = <span class="num">50</span>   <span class="cm"># 0-100, defaul
       <div class="quiz-card">
         <div class="quiz-q">Q4. What should you NOT name your Python camera file?</div>
         <div class="quiz-options">
-          <button class="quiz-option" onclick="checkAnswer(this, false)">A) camera.py</button>
-          <button class="quiz-option" onclick="checkAnswer(this, true)">B) picamera.py</button>
-          <button class="quiz-option" onclick="checkAnswer(this, false)">C) main.py</button>
-          <button class="quiz-option" onclick="checkAnswer(this, false)">D) capture.py</button>
+          <button class="quiz-option" data-correct="false">A) camera.py</button>
+          <button class="quiz-option" data-correct="true">B) picamera.py</button>
+          <button class="quiz-option" data-correct="false">C) main.py</button>
+          <button class="quiz-option" data-correct="false">D) capture.py</button>
         </div>
         <div class="quiz-result">Never name it picamera.py — it would conflict with the picamera library itself! ✓</div>
       </div>
@@ -552,21 +566,12 @@ camera.contrast = <span class="num">50</span>   <span class="cm"># 0-100, defaul
   <p>Experiment 4 — Pi Camera &amp; Object Detection | <a href="ex_3.html" style="color:var(--accent-cyan)">← Ex 3: RPi Intro</a> | <a href="hardware.html" style="color:var(--accent-cyan)">Hardware Task →</a></p>
 </footer>
 
+<script src="nav.js"></script>
 <script>
-  window.addEventListener('scroll', () => {
-    const winScroll = document.documentElement.scrollTop;
-    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    document.getElementById('progressBar').style.width = ((winScroll / height) * 100) + '%';
-  });
-  function toggleAcc(btn) { btn.closest('.accordion-item').classList.toggle('open'); }
-  function checkAnswer(btn, isCorrect) {
-    const card = btn.closest('.quiz-card');
-    if (card.querySelector('.correct, .wrong')) return;
-    btn.classList.add(isCorrect ? 'correct' : 'wrong');
-    const result = card.querySelector('.quiz-result');
-    result.classList.add('show', isCorrect ? 'correct-msg' : 'wrong-msg');
-    if (!isCorrect) card.querySelectorAll('.quiz-option').forEach(o => { if(o !== btn) o.style.opacity='0.5'; });
-  }
+  initNav('ex_4.html');
+  initProgress();
+  initAccordions();
+  initQuiz();
 </script>
 </body>
 </html>
