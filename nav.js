@@ -1,6 +1,23 @@
 // Shared navbar functionality for all pages
 // Include this inline or as a module
 
+// Global function for accordions (used in ex_4.html)
+function toggleAcc(el) {
+  const item = el.closest('.accordion-item');
+  if (item) {
+    item.classList.toggle('open');
+  }
+}
+
+// Global function for checklist items (used in hardware.html)
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+  const checkMark = el.querySelector('.check');
+  if (checkMark) {
+    checkMark.textContent = el.classList.contains('checked') ? '✓' : '';
+  }
+}
+
 function initNav(activePage) {
   // Set active link in desktop nav
   document.querySelectorAll('.nav-links a, .drawer-links a').forEach(a => {
@@ -32,6 +49,9 @@ function initNav(activePage) {
     a.addEventListener('click', closeDrawer);
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+  // Automatically initialize Lightbox on page load
+  initLightbox();
 }
 
 function initProgress() {
@@ -46,7 +66,9 @@ function initProgress() {
 
 function initAccordions() {
   document.querySelectorAll('.accordion-header').forEach(btn => {
-    btn.addEventListener('click', () => btn.closest('.accordion-item').classList.toggle('open'));
+    if (!btn.hasAttribute('onclick')) {
+      btn.addEventListener('click', () => btn.closest('.accordion-item').classList.toggle('open'));
+    }
   });
 }
 
@@ -67,3 +89,54 @@ function initQuiz() {
     });
   });
 }
+
+function initLightbox() {
+  if (document.getElementById('lightboxModal')) return;
+
+  const lightbox = document.createElement('div');
+  lightbox.id = 'lightboxModal';
+  lightbox.className = 'lightbox-modal';
+  lightbox.innerHTML = `
+    <button class="lightbox-close" id="lightboxCloseBtn" aria-label="Close image">✕</button>
+    <img class="lightbox-content" id="lightboxImg" src="" alt="">
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+  `;
+  document.body.appendChild(lightbox);
+
+  const modal = document.getElementById('lightboxModal');
+  const modalImg = document.getElementById('lightboxImg');
+  const caption = document.getElementById('lightboxCaption');
+  const closeBtn = document.getElementById('lightboxCloseBtn');
+
+  function closeLightbox() {
+    modal.classList.remove('show');
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 300);
+  }
+
+  closeBtn.addEventListener('click', closeLightbox);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal || e.target === modalImg) {
+      closeLightbox();
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('show')) {
+      closeLightbox();
+    }
+  });
+
+  document.querySelectorAll('.diagram-img-wrap img').forEach(img => {
+    img.addEventListener('click', function() {
+      modalImg.src = this.src;
+      modalImg.alt = this.alt;
+      caption.textContent = this.nextElementSibling ? this.nextElementSibling.textContent : (this.alt || 'Diagram');
+      modal.style.display = 'flex';
+      // force repaint
+      modal.offsetHeight;
+      modal.classList.add('show');
+    });
+  });
+}
+

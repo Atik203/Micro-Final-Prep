@@ -6,6 +6,14 @@
   <title>Experiment 3 — Raspberry Pi 5 Introduction | Micro Lab Prep</title>
   <meta name="description" content="Study guide for Experiment 3: Raspberry Pi 5, GPIO pins, gpiozero Python library, microprocessor vs microcontroller. CSE 4326 Micro Lab.">
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      corePlugins: {
+        preflight: false,
+      }
+    }
+  </script>
   <style>
     .pin-table th { color: var(--accent-violet); }
     .pin-table td:first-child { color: var(--accent-amber); }
@@ -91,6 +99,29 @@
   </aside>
 
   <main class="main-content">
+
+    <!-- Mobile Table of Contents (visible only on mobile/tablet) -->
+    <div class="block md:hidden mb-6 bg-slate-900 border border-slate-700/50 rounded-xl overflow-hidden transition-all duration-300">
+      <details class="group">
+        <summary class="flex justify-between items-center p-4 font-semibold text-sm cursor-pointer list-none select-none text-violet-400 hover:bg-slate-800/50 transition-colors">
+          <span class="flex items-center gap-2">📖 Jump to Section</span>
+          <span class="text-xs transition-transform duration-300 group-open:rotate-180">▼</span>
+        </summary>
+        <div class="p-4 bg-slate-950/40 border-t border-slate-700/30">
+          <ul class="grid grid-cols-2 gap-2 text-xs list-none pl-0" style="margin: 0; padding: 0;">
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#micro-vs-pi" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-violet-400 no-underline truncate" style="color: inherit; text-decoration: none;">Micro vs Pi</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#rpi-overview" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-violet-400 no-underline truncate" style="color: inherit; text-decoration: none;">RPi Overview</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#board-diagram" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-violet-400 no-underline truncate" style="color: inherit; text-decoration: none;">Board Diagram</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#rpi5-features" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-violet-400 no-underline truncate" style="color: inherit; text-decoration: none;">Pi 5 Specs</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#gpio" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-violet-400 no-underline truncate" style="color: inherit; text-decoration: none;">GPIO Pins</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#setup" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-violet-400 no-underline truncate" style="color: inherit; text-decoration: none;">Hardware Setup</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#gpiozero" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-violet-400 no-underline truncate" style="color: inherit; text-decoration: none;">gpiozero Library</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#python-code" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-violet-400 no-underline truncate" style="color: inherit; text-decoration: none;">Python Code</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#quiz" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-violet-400 no-underline truncate" style="color: inherit; text-decoration: none;">Quick Quiz</a></li>
+          </ul>
+        </div>
+      </details>
+    </div>
 
     <!-- MICROCONTROLLER VS MICROPROCESSOR -->
     <section id="micro-vs-pi">

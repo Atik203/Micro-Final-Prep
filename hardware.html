@@ -6,6 +6,14 @@
   <title>Hardware Task Guide — 5 Marks | Micro Lab Prep</title>
   <meta name="description" content="Hardware task guide for UIU CSE 4326 Micro Lab Final. Covers Experiment 1 (Arduino + MQ-2 + OLED) and Experiment 2 (ESP32 + DHT11) wiring with step-by-step instructions.">
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      corePlugins: {
+        preflight: false,
+      }
+    }
+  </script>
   <style>
     .hw-hero {
       background: linear-gradient(135deg, #160d35, #0d1a35, #0a1a0a);
@@ -241,6 +249,24 @@
 
 <!-- IMPORTANT NOTE -->
 <div class="hw-section" style="padding-bottom:0">
+  <!-- Mobile Table of Contents (visible only on mobile/tablet) -->
+  <div class="block md:hidden mb-6 bg-slate-900 border border-slate-700/50 rounded-xl overflow-hidden transition-all duration-300">
+    <details class="group">
+      <summary class="flex justify-between items-center p-4 font-semibold text-sm cursor-pointer list-none select-none text-violet-400 hover:bg-slate-800/50 transition-colors">
+        <span class="flex items-center gap-2">📖 Jump to Section</span>
+        <span class="text-xs transition-transform duration-300 group-open:rotate-180">▼</span>
+      </summary>
+      <div class="p-4 bg-slate-950/40 border-t border-slate-700/30">
+        <ul class="grid grid-cols-2 gap-2 text-xs list-none pl-0" style="margin: 0; padding: 0;">
+          <li style="padding: 0; margin: 0; list-style: none;"><a href="#arduino-exp" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-violet-400 no-underline truncate" style="color: inherit; text-decoration: none;">Experiment 1 wiring</a></li>
+          <li style="padding: 0; margin: 0; list-style: none;"><a href="#esp32-exp" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-violet-400 no-underline truncate" style="color: inherit; text-decoration: none;">Experiment 2 wiring</a></li>
+          <li style="padding: 0; margin: 0; list-style: none;"><a href="#quick-ref" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-violet-400 no-underline truncate" style="color: inherit; text-decoration: none;">Quick Reference</a></li>
+          <li style="padding: 0; margin: 0; list-style: none;"><a href="#score-guide" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-violet-400 no-underline truncate" style="color: inherit; text-decoration: none;">Scoring Guide</a></li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
   <div class="info-box amber">
     <div class="icon">📌</div>
     <div class="content">
@@ -251,7 +277,7 @@
 </div>
 
 <!-- ====== EXPERIMENT 1 ====== -->
-<div class="hw-section">
+<div class="hw-section" id="arduino-exp">
   <div class="exp-header">
     <div class="exp-header-icon" style="background: rgba(6,182,212,0.15);">🤖</div>
     <div>
@@ -444,7 +470,7 @@ Adafruit_SSD1306 <span class="fn">display</span>(<span class="num">128</span>, <
 <hr class="divider">
 
 <!-- ====== EXPERIMENT 2 ====== -->
-<div class="hw-section" style="padding-top: 0">
+<div class="hw-section" id="esp32-exp" style="padding-top: 0">
   <div class="exp-header">
     <div class="exp-header-icon" style="background: rgba(16,185,129,0.15);">📡</div>
     <div>
@@ -649,7 +675,7 @@ String URL = <span class="str">"http://YOUR_IP/dht11_project/testdata.php"</span
 <hr class="divider">
 
 <!-- QUICK REFERENCE -->
-<div class="hw-section" style="padding-top:0">
+<div class="hw-section" id="quick-ref" style="padding-top:0">
   <h2 style="font-size:1.4rem; font-weight:700; margin-bottom:1.25rem;">⚡ Quick Reference Summary</h2>
 
   <div class="quick-ref">
@@ -688,7 +714,7 @@ String URL = <span class="str">"http://YOUR_IP/dht11_project/testdata.php"</span
   </div>
 
   <!-- SCORE GUIDE -->
-  <div class="score-card">
+  <div class="score-card" id="score-guide">
     <h3>📊 Hardware Task Scoring Estimate (5 Marks)</h3>
     <div class="score-row">
       <div class="score-mark">2</div>
@@ -728,12 +754,6 @@ String URL = <span class="str">"http://YOUR_IP/dht11_project/testdata.php"</span
 <script>
   initNav('hardware.html');
   initProgress();
-  document.querySelectorAll('.component-item').forEach(item => {
-    item.addEventListener('click', function() {
-      this.classList.toggle('checked');
-      this.querySelector('.check').textContent = this.classList.contains('checked') ? '✓' : '';
-    });
-  });
 </script>
 </body>
 </html>

@@ -6,6 +6,14 @@
   <title>Experiment 1 — Arduino + Gas Sensor + OLED | Micro Lab Prep</title>
   <meta name="description" content="Study guide for Experiment 1: Arduino Uno, MQ-2 gas sensor, OLED display. Key functions: digitalWrite, digitalRead, analogRead, setup, loop. CSE 4326.">
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      corePlugins: {
+        preflight: false,
+      }
+    }
+  </script>
   <style>
     .key-fact { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 0.45rem 0.85rem; margin: 0.2rem; font-size: 0.85rem; }
     .key-fact strong { color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; }
@@ -106,6 +114,31 @@
   </aside>
 
   <main class="main-content">
+
+    <!-- Mobile Table of Contents (visible only on mobile/tablet) -->
+    <div class="block md:hidden mb-6 bg-slate-900 border border-slate-700/50 rounded-xl overflow-hidden transition-all duration-300">
+      <details class="group">
+        <summary class="flex justify-between items-center p-4 font-semibold text-sm cursor-pointer list-none select-none text-cyan-400 hover:bg-slate-800/50 transition-colors">
+          <span class="flex items-center gap-2">📖 Jump to Section</span>
+          <span class="text-xs transition-transform duration-300 group-open:rotate-180">▼</span>
+        </summary>
+        <div class="p-4 bg-slate-950/40 border-t border-slate-700/30">
+          <ul class="grid grid-cols-2 gap-2 text-xs list-none pl-0" style="margin: 0; padding: 0;">
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#arduino-intro" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 no-underline truncate" style="color: inherit; text-decoration: none;">Arduino Intro</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#board-diagram" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 no-underline truncate" style="color: inherit; text-decoration: none;">Board Diagram</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#pins" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 no-underline truncate" style="color: inherit; text-decoration: none;">Pin Overview</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#functions" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 no-underline truncate" style="color: inherit; text-decoration: none;">setup() &amp; loop()</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#key-functions" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 no-underline truncate" style="color: inherit; text-decoration: none;">Key Functions</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#serial" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 no-underline truncate" style="color: inherit; text-decoration: none;">Serial Comm</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#mq2" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 no-underline truncate" style="color: inherit; text-decoration: none;">MQ-2 Sensor</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#oled" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 no-underline truncate" style="color: inherit; text-decoration: none;">OLED Display</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#wiring" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 no-underline truncate" style="color: inherit; text-decoration: none;">Full Wiring</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#code" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 no-underline truncate" style="color: inherit; text-decoration: none;">Code Examples</a></li>
+            <li style="padding: 0; margin: 0; list-style: none;"><a href="#quiz" class="block p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 no-underline truncate" style="color: inherit; text-decoration: none;">Quick Quiz</a></li>
+          </ul>
+        </div>
+      </details>
+    </div>
 
     <!-- ARDUINO INTRO -->
     <section id="arduino-intro">
