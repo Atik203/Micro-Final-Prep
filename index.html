@@ -7,152 +7,51 @@
   <meta name="description" content="Comprehensive study guide for UIU CSE 4326 Microprocessors and Microcontrollers Lab Final Exam. Covers Arduino, ESP32, Raspberry Pi, XAMPP, and more.">
   <link rel="stylesheet" href="style.css">
   <style>
-    .stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 2rem 0; }
-    .stat-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      text-align: center;
-      transition: all 0.3s;
-    }
+    .stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.9rem; margin: 1.5rem 0; }
+    .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem; text-align: center; transition: all 0.3s; }
     .stat-card:hover { border-color: var(--accent-cyan); transform: translateY(-3px); }
-    .stat-num { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .stat-label { color: var(--text-muted); font-size: 0.82rem; margin-top: 0.25rem; font-weight: 500; }
+    .stat-num { font-size: 1.9rem; font-weight: 800; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .stat-label { color: var(--text-muted); font-size: 0.78rem; margin-top: 0.2rem; font-weight: 500; }
 
-    .exp-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
-
-    .exp-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.75rem;
-      text-decoration: none;
-      color: inherit;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      transition: all 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .exp-card::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 3px;
-      background: var(--card-color, var(--accent-cyan));
-      transform: scaleX(0);
-      transition: transform 0.3s;
-    }
-
-    .exp-card:hover {
-      border-color: var(--card-color, var(--accent-cyan));
-      transform: translateY(-5px);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-    }
-
+    .exp-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1.25rem; }
+    .exp-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 0.85rem; transition: all 0.3s; position: relative; overflow: hidden; }
+    .exp-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--card-color, var(--accent-cyan)); transform: scaleX(0); transition: transform 0.3s; }
+    .exp-card:hover { border-color: var(--card-color, var(--accent-cyan)); transform: translateY(-5px); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
     .exp-card:hover::after { transform: scaleX(1); }
-
     .exp-card-top { display: flex; align-items: center; justify-content: space-between; }
-    .exp-num { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
-
-    .exp-icon {
-      width: 52px; height: 52px;
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem;
-      background: var(--card-bg, rgba(6,182,212,0.1));
-    }
-
-    .exp-card h3 { font-size: 1.15rem; font-weight: 700; line-height: 1.3; }
-
-    .exp-card p { color: var(--text-secondary); font-size: 0.875rem; line-height: 1.55; flex: 1; }
-
-    .exp-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-
-    .exp-tag {
-      padding: 0.2rem 0.55rem;
-      border-radius: 5px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      background: rgba(255,255,255,0.05);
-      color: var(--text-muted);
-      border: 1px solid var(--border);
-    }
-
-    .exp-arrow {
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      transition: transform 0.2s, color 0.2s;
-    }
-
+    .exp-num { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
+    .exp-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: var(--card-bg, rgba(6,182,212,0.1)); }
+    .exp-card h3 { font-size: 1.05rem; font-weight: 700; line-height: 1.3; }
+    .exp-card p { color: var(--text-secondary); font-size: 0.85rem; line-height: 1.55; flex: 1; }
+    .exp-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+    .exp-tag { padding: 0.18rem 0.5rem; border-radius: 5px; font-size: 0.7rem; font-weight: 600; background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border); }
+    .exp-arrow { color: var(--text-muted); font-size: 1rem; transition: transform 0.2s, color 0.2s; }
     .exp-card:hover .exp-arrow { transform: translateX(4px); color: var(--card-color, var(--accent-cyan)); }
 
-    .hw-card {
-      background: linear-gradient(135deg, #1a0d35, #0d1a35);
-      border: 1px solid var(--accent-violet);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-      text-decoration: none;
-      color: inherit;
-      transition: all 0.3s;
-      flex-wrap: wrap;
-    }
-
+    .hw-card { background: linear-gradient(135deg, #1a0d35, #0d1a35); border: 1px solid var(--accent-violet); border-radius: var(--radius-lg); padding: 1.75rem; display: flex; align-items: center; gap: 1.5rem; text-decoration: none; color: inherit; transition: all 0.3s; flex-wrap: wrap; }
     .hw-card:hover { transform: translateY(-4px); box-shadow: var(--glow-violet); }
-    .hw-card-icon { font-size: 3rem; flex-shrink: 0; }
-    .hw-card h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; }
-    .hw-card p { color: var(--text-secondary); }
-    .hw-btn {
-      margin-top: 1rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--accent-violet);
-      color: #fff;
-      padding: 0.6rem 1.25rem;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-    }
+    .hw-card-icon { font-size: 2.5rem; flex-shrink: 0; }
+    .hw-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .hw-card p { color: var(--text-secondary); font-size: 0.875rem; }
+    .hw-btn { margin-top: 0.85rem; display: inline-flex; align-items: center; gap: 0.5rem; background: var(--accent-violet); color: #fff; padding: 0.55rem 1.1rem; border-radius: 8px; font-weight: 700; font-size: 0.875rem; transition: all 0.2s; }
     .hw-btn:hover { background: #7c3aed; }
 
-    .tip-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
-    .tip-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1rem 1.25rem;
-      display: flex; gap: 0.75rem; align-items: flex-start;
-    }
-    .tip-icon { font-size: 1.5rem; flex-shrink: 0; }
-    .tip-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem; }
-    .tip-card p { color: var(--text-muted); font-size: 0.825rem; }
+    .tip-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 0.9rem; }
+    .tip-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1.1rem; display: flex; gap: 0.65rem; align-items: flex-start; }
+    .tip-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .tip-card h4 { font-size: 0.875rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .tip-card p { color: var(--text-muted); font-size: 0.8rem; }
 
-    .compare-wrapper {
-      overflow-x: auto;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      margin: 1.5rem 0;
-    }
-    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; min-width: 600px; }
-    .compare-table th { background: #162030; padding: 0.9rem 1rem; text-align: left; font-weight: 700; border-bottom: 2px solid var(--border); }
+    .compare-wrapper { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); margin: 1.25rem 0; -webkit-overflow-scrolling: touch; }
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 580px; }
+    .compare-table th { background: #162030; padding: 0.8rem 0.9rem; text-align: left; font-weight: 700; border-bottom: 2px solid var(--border); }
     .compare-table th:first-child { color: var(--text-muted); }
     .compare-table th:nth-child(2) { color: var(--accent-cyan); }
     .compare-table th:nth-child(3) { color: var(--accent-emerald); }
     .compare-table th:nth-child(4) { color: var(--accent-violet); }
-    .compare-table td { padding: 0.8rem 1rem; border-top: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+    .compare-table td { padding: 0.7rem 0.9rem; border-top: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
     .compare-table tr:hover td { background: #0d1522; }
     .compare-table td:first-child { font-weight: 600; color: var(--text-primary); white-space: nowrap; }
-    .yes { color: #6ee7b7; font-weight: 600; }
-    .no { color: #fda4af; }
-    .partial { color: #fcd34d; }
   </style>
 </head>
 <body>
@@ -163,14 +62,37 @@
 <nav class="navbar">
   <div class="nav-inner">
     <a href="index.html" class="nav-brand">⚡ MicroLab Prep</a>
-    <ul class="nav-links">
+    <ul class="nav-links" id="navLinks">
       <li><a href="ex_1.html">Ex 1: Arduino</a></li>
       <li><a href="ex_2.html">Ex 2: ESP32</a></li>
       <li><a href="ex_3.html">Ex 3: RPi Intro</a></li>
       <li><a href="ex_4.html">Ex 4: Pi Camera</a></li>
       <li><a href="hardware.html">🔧 Hardware</a></li>
     </ul>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
+</nav>
+
+<!-- OVERLAY -->
+<div class="nav-overlay" id="navOverlay"></div>
+
+<!-- SIDE DRAWER -->
+<nav class="nav-drawer" id="navDrawer">
+  <div class="drawer-header">
+    <span class="drawer-brand">⚡ MicroLab Prep</span>
+    <button class="drawer-close" id="drawerClose">✕</button>
+  </div>
+  <div class="drawer-label">Study Chapters</div>
+  <ul class="drawer-links">
+    <li><a href="index.html" class="active"><span class="link-icon">🏠</span> Home / Dashboard</a></li>
+    <li><a href="ex_1.html"><span class="link-icon">🤖</span> Ex 1: Arduino &amp; Gas Sensor</a></li>
+    <li><a href="ex_2.html"><span class="link-icon">📡</span> Ex 2: ESP32 &amp; XAMPP</a></li>
+    <li><a href="ex_3.html"><span class="link-icon">🍓</span> Ex 3: Raspberry Pi Intro</a></li>
+    <li><a href="ex_4.html"><span class="link-icon">📷</span> Ex 4: Pi Camera &amp; ML</a></li>
+    <li><a href="hardware.html"><span class="link-icon">🔧</span> Hardware Task (5 Marks)</a></li>
+  </ul>
 </nav>
 
 <!-- HERO -->
@@ -179,116 +101,59 @@
   <h1>Ace Your<br><span>Micro Lab Final</span></h1>
   <p>Complete study guide for all 5 experiments — written section + hardware task. No math problems. Just concepts, code, and clarity.</p>
   <div class="stat-cards">
-    <div class="stat-card">
-      <div class="stat-num">15</div>
-      <div class="stat-label">Written Marks</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num">5</div>
-      <div class="stat-label">Hardware Marks</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num">10</div>
-      <div class="stat-label">Minutes</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num">5</div>
-      <div class="stat-label">Experiments</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num">0</div>
-      <div class="stat-label">Math Problems</div>
-    </div>
+    <div class="stat-card"><div class="stat-num">15</div><div class="stat-label">Written Marks</div></div>
+    <div class="stat-card"><div class="stat-num">5</div><div class="stat-label">Hardware Marks</div></div>
+    <div class="stat-card"><div class="stat-num">20</div><div class="stat-label">Minutes</div></div>
+    <div class="stat-card"><div class="stat-num">5</div><div class="stat-label">Experiments</div></div>
+    <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">Math Problems</div></div>
   </div>
 </section>
 
 <!-- EXPERIMENTS -->
 <section class="section">
-  <div class="section-title">
-    <div class="icon" style="background: rgba(6,182,212,0.15);">🧪</div>
-    Experiment Chapters
-  </div>
-  <p class="section-subtitle">All 5 experiments are covered in the written section. Experiments 1 &amp; 2 are also tested in the hardware task.</p>
-
+  <div class="section-title"><div class="icon" style="background:rgba(6,182,212,0.15);">🧪</div>Experiment Chapters</div>
+  <p class="section-subtitle">All 5 experiments covered in the written section. Experiments 1 &amp; 2 are also in the hardware task.</p>
   <div class="exp-cards">
-    <a href="ex_1.html" class="exp-card" style="--card-color:#06b6d4; --card-bg:rgba(6,182,212,0.1)">
-      <div class="exp-card-top">
-        <span class="exp-num">Experiment 01</span>
-        <div class="exp-icon">🤖</div>
-      </div>
+    <a href="ex_1.html" class="exp-card" style="--card-color:#06b6d4;--card-bg:rgba(6,182,212,0.1)">
+      <div class="exp-card-top"><span class="exp-num">Experiment 01</span><div class="exp-icon">🤖</div></div>
       <h3>Arduino + Gas Sensor + OLED Display</h3>
-      <p>Learn Arduino Uno pins, setup/loop functions, MQ-2 gas sensor interfacing, and displaying data on SSD1306 OLED via I2C.</p>
-      <div class="exp-tags">
-        <span class="exp-tag">Arduino Uno</span>
-        <span class="exp-tag">MQ-2 Sensor</span>
-        <span class="exp-tag">OLED SSD1306</span>
-        <span class="exp-tag">Proteus</span>
-      </div>
-      <div style="display:flex; justify-content:flex-end;"><span class="exp-arrow">→</span></div>
+      <p>Arduino Uno pins, setup/loop functions, MQ-2 gas sensor interfacing, OLED via I2C. Key: digitalWrite, analogRead, Serial.begin.</p>
+      <div class="exp-tags"><span class="exp-tag">Arduino Uno</span><span class="exp-tag">MQ-2 Sensor</span><span class="exp-tag">OLED SSD1306</span><span class="exp-tag">Proteus</span></div>
+      <div style="display:flex;justify-content:flex-end"><span class="exp-arrow">→</span></div>
     </a>
-
-    <a href="ex_2.html" class="exp-card" style="--card-color:#10b981; --card-bg:rgba(16,185,129,0.1)">
-      <div class="exp-card-top">
-        <span class="exp-num">Experiment 02</span>
-        <div class="exp-icon">📡</div>
-      </div>
+    <a href="ex_2.html" class="exp-card" style="--card-color:#10b981;--card-bg:rgba(16,185,129,0.1)">
+      <div class="exp-card-top"><span class="exp-num">Experiment 02</span><div class="exp-icon">📡</div></div>
       <h3>ESP32 + XAMPP + IoT Cloud</h3>
-      <p>Set up ESP32 for WiFi IoT, send DHT11 sensor data to a local XAMPP server using PHP &amp; MySQL, and build a simple dashboard.</p>
-      <div class="exp-tags">
-        <span class="exp-tag">ESP32</span>
-        <span class="exp-tag">XAMPP</span>
-        <span class="exp-tag">DHT11</span>
-        <span class="exp-tag">PHP &amp; MySQL</span>
-      </div>
-      <div style="display:flex; justify-content:flex-end;"><span class="exp-arrow">→</span></div>
+      <p>ESP32 WiFi IoT, DHT11 sensor data to XAMPP local server, PHP &amp; MySQL database, HTTP POST. Built-in WiFi/Bluetooth.</p>
+      <div class="exp-tags"><span class="exp-tag">ESP32</span><span class="exp-tag">XAMPP</span><span class="exp-tag">DHT11</span><span class="exp-tag">PHP &amp; MySQL</span></div>
+      <div style="display:flex;justify-content:flex-end"><span class="exp-arrow">→</span></div>
     </a>
-
-    <a href="ex_3.html" class="exp-card" style="--card-color:#8b5cf6; --card-bg:rgba(139,92,246,0.1)">
-      <div class="exp-card-top">
-        <span class="exp-num">Experiment 03</span>
-        <div class="exp-icon">🍓</div>
-      </div>
-      <h3>Introduction to Raspberry Pi</h3>
-      <p>Explore Raspberry Pi 4B as a microprocessor, its GPIO pins, gpiozero library for LED control, and OS setup with Raspberry Pi Imager.</p>
-      <div class="exp-tags">
-        <span class="exp-tag">Raspberry Pi 4B</span>
-        <span class="exp-tag">GPIO</span>
-        <span class="exp-tag">gpiozero</span>
-        <span class="exp-tag">Python</span>
-      </div>
-      <div style="display:flex; justify-content:flex-end;"><span class="exp-arrow">→</span></div>
+    <a href="ex_3.html" class="exp-card" style="--card-color:#8b5cf6;--card-bg:rgba(139,92,246,0.1)">
+      <div class="exp-card-top"><span class="exp-num">Experiment 03</span><div class="exp-icon">🍓</div></div>
+      <h3>Introduction to Raspberry Pi 5</h3>
+      <p>Raspberry Pi 5 as a microprocessor, GPIO pins, gpiozero library, Python LED control, OS setup. Microprocessor vs microcontroller.</p>
+      <div class="exp-tags"><span class="exp-tag">Raspberry Pi 5</span><span class="exp-tag">GPIO</span><span class="exp-tag">gpiozero</span><span class="exp-tag">Python</span></div>
+      <div style="display:flex;justify-content:flex-end"><span class="exp-arrow">→</span></div>
     </a>
-
-    <a href="ex_4.html" class="exp-card" style="--card-color:#f59e0b; --card-bg:rgba(245,158,11,0.1)">
-      <div class="exp-card-top">
-        <span class="exp-num">Experiment 04</span>
-        <div class="exp-icon">📷</div>
-      </div>
+    <a href="ex_4.html" class="exp-card" style="--card-color:#f59e0b;--card-bg:rgba(245,158,11,0.1)">
+      <div class="exp-card-top"><span class="exp-num">Experiment 04</span><div class="exp-icon">📷</div></div>
       <h3>Image/Video Processing with Pi Camera</h3>
-      <p>Connect the Pi Camera to the CSI port, capture images/videos from command line and Python, and run a TensorFlow Lite object detection model.</p>
-      <div class="exp-tags">
-        <span class="exp-tag">Pi Camera</span>
-        <span class="exp-tag">OpenCV</span>
-        <span class="exp-tag">TFLite</span>
-        <span class="exp-tag">picamera</span>
-      </div>
-      <div style="display:flex; justify-content:flex-end;"><span class="exp-arrow">→</span></div>
+      <p>Pi Camera CSI port, raspistill/raspivid commands, Python picamera, TensorFlow Lite object detection for 80 objects.</p>
+      <div class="exp-tags"><span class="exp-tag">Pi Camera</span><span class="exp-tag">OpenCV</span><span class="exp-tag">TFLite</span><span class="exp-tag">picamera</span></div>
+      <div style="display:flex;justify-content:flex-end"><span class="exp-arrow">→</span></div>
     </a>
   </div>
 </section>
 
 <!-- HARDWARE TASK -->
 <section class="section" style="padding-top:0">
-  <div class="section-title">
-    <div class="icon" style="background: rgba(139,92,246,0.15);">🔧</div>
-    Hardware Task (5 Marks)
-  </div>
-  <p class="section-subtitle">Only Experiments 1 &amp; 2 are included in the hardware task. Done in groups.</p>
+  <div class="section-title"><div class="icon" style="background:rgba(139,92,246,0.15);">🔧</div>Hardware Task (5 Marks)</div>
+  <p class="section-subtitle">Only Experiments 1 &amp; 2 are included. Done in groups.</p>
   <a href="hardware.html" class="hw-card">
     <div class="hw-card-icon">⚙️</div>
     <div style="flex:1">
       <h3>Hardware Task Study Guide</h3>
-      <p>Step-by-step wiring guide for Ex 1 (Arduino + MQ-2 + OLED) and Ex 2 (ESP32 + DHT11 + XAMPP). Includes component checklists, connection diagrams, and quick-reference code.</p>
+      <p>Step-by-step wiring for Ex 1 (Arduino + MQ-2 + OLED) and Ex 2 (ESP32 + DHT11 + XAMPP). Component checklists, connection diagrams, and quick-reference code.</p>
       <div class="hw-btn">Open Hardware Guide →</div>
     </div>
   </a>
@@ -296,113 +161,27 @@
 
 <!-- COMPARISON TABLE -->
 <section class="section" style="padding-top:0">
-  <div class="section-title">
-    <div class="icon" style="background: rgba(245,158,11,0.15);">⚖️</div>
-    Board Comparison — Must Know!
-  </div>
+  <div class="section-title"><div class="icon" style="background:rgba(245,158,11,0.15);">⚖️</div>Board Comparison — Must Know!</div>
   <p class="section-subtitle">This comparison is a guaranteed exam topic. Know it cold.</p>
-
   <div class="compare-wrapper">
     <table class="compare-table">
       <thead>
-        <tr>
-          <th>Feature</th>
-          <th>🤖 Arduino Uno</th>
-          <th>📡 ESP32</th>
-          <th>🍓 Raspberry Pi 4B</th>
-        </tr>
+        <tr><th>Feature</th><th>🤖 Arduino Uno</th><th>📡 ESP32</th><th>🍓 Raspberry Pi 5</th></tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Type</td>
-          <td>Microcontroller</td>
-          <td>Microcontroller (SoC)</td>
-          <td>Microprocessor (SBC)</td>
-        </tr>
-        <tr>
-          <td>CPU</td>
-          <td>ATmega328P @ 16 MHz</td>
-          <td>Xtensa LX6 Dual-core @ 240 MHz</td>
-          <td>Cortex-A72 Quad-core @ 1.5 GHz</td>
-        </tr>
-        <tr>
-          <td>RAM</td>
-          <td>2 KB SRAM</td>
-          <td>520 KB SRAM</td>
-          <td>1–8 GB LPDDR4</td>
-        </tr>
-        <tr>
-          <td>Operating Voltage</td>
-          <td>5V (HIGH) / 0V (LOW)</td>
-          <td>3.3V (HIGH) / 0V (LOW)</td>
-          <td>3.3V (HIGH) / 0V (LOW)</td>
-        </tr>
-        <tr>
-          <td>WiFi</td>
-          <td class="no">✗ No</td>
-          <td class="yes">✓ Built-in 802.11 b/g/n</td>
-          <td class="yes">✓ 802.11ac</td>
-        </tr>
-        <tr>
-          <td>Bluetooth</td>
-          <td class="no">✗ No</td>
-          <td class="yes">✓ BT Classic + BLE</td>
-          <td class="yes">✓ BT 5.0</td>
-        </tr>
-        <tr>
-          <td>Operating System</td>
-          <td class="no">None (bare metal)</td>
-          <td class="no">None / FreeRTOS</td>
-          <td class="yes">Raspberry Pi OS (Linux)</td>
-        </tr>
-        <tr>
-          <td>Programming</td>
-          <td>C/C++ (Arduino IDE)</td>
-          <td>C/C++ (Arduino IDE)</td>
-          <td>Python, C/C++, any language</td>
-        </tr>
-        <tr>
-          <td>ADC Channels</td>
-          <td>6 (10-bit)</td>
-          <td>18 (12-bit)</td>
-          <td>None built-in</td>
-        </tr>
-        <tr>
-          <td>UART/I2C/SPI</td>
-          <td class="yes">✓ Yes</td>
-          <td class="yes">✓ Yes (more)</td>
-          <td class="yes">✓ Yes</td>
-        </tr>
-        <tr>
-          <td>GPIO Pins</td>
-          <td>14 digital + 6 analog</td>
-          <td>34 programmable</td>
-          <td>40 GPIO (BCM numbering)</td>
-        </tr>
-        <tr>
-          <td>Storage</td>
-          <td>32 KB Flash</td>
-          <td>4 MB Flash + 1.5 MB SPIFFS</td>
-          <td>MicroSD card (external)</td>
-        </tr>
-        <tr>
-          <td>USB</td>
-          <td>USB-B (programming)</td>
-          <td>Micro-USB</td>
-          <td>USB-C (power) + 4×USB</td>
-        </tr>
-        <tr>
-          <td>Cost</td>
-          <td class="yes">Very low (~$5)</td>
-          <td class="yes">Low (~$10)</td>
-          <td class="partial">Moderate (~$35–80)</td>
-        </tr>
-        <tr>
-          <td>Best For</td>
-          <td>Simple sensors, beginners</td>
-          <td>IoT, wireless projects</td>
-          <td>Complex computing, ML, vision</td>
-        </tr>
+        <tr><td>Type</td><td>Microcontroller</td><td>Microcontroller (SoC)</td><td>Microprocessor (SBC)</td></tr>
+        <tr><td>CPU</td><td>ATmega328P @ 16 MHz</td><td>Xtensa LX6 Dual-core @ 240 MHz</td><td>Cortex-A76 Quad-core @ 2.4 GHz</td></tr>
+        <tr><td>RAM</td><td>2 KB SRAM</td><td>520 KB SRAM</td><td>4–8 GB LPDDR4X</td></tr>
+        <tr><td>GPIO HIGH Voltage</td><td class="yes">5V</td><td class="partial">3.3V</td><td class="partial">3.3V</td></tr>
+        <tr><td>WiFi Built-in</td><td class="no">✗ No</td><td class="yes">✓ 802.11 b/g/n</td><td class="yes">✓ 802.11ac</td></tr>
+        <tr><td>Bluetooth</td><td class="no">✗ No</td><td class="yes">✓ BT Classic + BLE</td><td class="yes">✓ BT 5.0</td></tr>
+        <tr><td>Operating System</td><td class="no">None (bare metal)</td><td class="no">None / FreeRTOS</td><td class="yes">Raspberry Pi OS (Linux)</td></tr>
+        <tr><td>Programming</td><td>C/C++ (Arduino IDE)</td><td>C/C++ (Arduino IDE)</td><td>Python, C/C++, any language</td></tr>
+        <tr><td>ADC Channels</td><td>6 (10-bit)</td><td>18 (12-bit)</td><td>None built-in</td></tr>
+        <tr><td>GPIO Pins</td><td>14 digital + 6 analog</td><td>34 programmable</td><td>40 GPIO (BCM numbering)</td></tr>
+        <tr><td>Storage</td><td>32 KB Flash</td><td>4 MB Flash</td><td>MicroSD card (external)</td></tr>
+        <tr><td>Cost</td><td class="yes">Very low (~$5)</td><td class="yes">Low (~$10)</td><td class="partial">Moderate (~$60–80)</td></tr>
+        <tr><td>Best For</td><td>Simple sensors, beginners</td><td>IoT, wireless projects</td><td>Complex computing, ML, vision</td></tr>
       </tbody>
     </table>
   </div>
@@ -410,53 +189,14 @@
 
 <!-- EXAM TIPS -->
 <section class="section" style="padding-top:0">
-  <div class="section-title">
-    <div class="icon" style="background: rgba(244,63,94,0.15);">💡</div>
-    Exam Strategy Tips
-  </div>
+  <div class="section-title"><div class="icon" style="background:rgba(244,63,94,0.15);">💡</div>Exam Strategy Tips</div>
   <div class="tip-cards">
-    <div class="tip-card">
-      <div class="tip-icon">⏱️</div>
-      <div>
-        <h4>10 Minutes — Manage Time</h4>
-        <p>MCQs first (quick 1-mark each), then 3-mark short answers, code last.</p>
-      </div>
-    </div>
-    <div class="tip-card">
-      <div class="tip-icon">🔢</div>
-      <div>
-        <h4>No Math Problems</h4>
-        <p>Teacher confirmed — focus on concepts, code, comparisons, not calculations.</p>
-      </div>
-    </div>
-    <div class="tip-card">
-      <div class="tip-icon">💻</div>
-      <div>
-        <h4>Code Questions (3-4 marks)</h4>
-        <p>Know LED blink modifications, setup()/loop() structure, and Serial.begin(9600).</p>
-      </div>
-    </div>
-    <div class="tip-card">
-      <div class="tip-icon">🆚</div>
-      <div>
-        <h4>Comparison Questions</h4>
-        <p>Arduino vs ESP32 vs RPi — cost, WiFi, processing power, OS. Learn the table above.</p>
-      </div>
-    </div>
-    <div class="tip-card">
-      <div class="tip-icon">🔧</div>
-      <div>
-        <h4>Hardware — Experiments 1 & 2 Only</h4>
-        <p>Practice wiring MQ-2 to Arduino and DHT11 to ESP32. Know pin connections by heart.</p>
-      </div>
-    </div>
-    <div class="tip-card">
-      <div class="tip-icon">📌</div>
-      <div>
-        <h4>Key Voltage Levels</h4>
-        <p>Arduino: HIGH=5V, LOW=0V · ESP32 & RPi GPIO: HIGH=3.3V, LOW=0V.</p>
-      </div>
-    </div>
+    <div class="tip-card"><div class="tip-icon">⏱️</div><div><h4>20 Minutes — Manage Time</h4><p>MCQs first (quick 1-mark each), then 3-mark short answers, code modification last.</p></div></div>
+    <div class="tip-card"><div class="tip-icon">🔢</div><div><h4>No Math Problems</h4><p>Teacher confirmed — focus on concepts, code, comparisons, not calculations.</p></div></div>
+    <div class="tip-card"><div class="tip-icon">💻</div><div><h4>Code Questions (3–4 marks)</h4><p>Know LED blink modifications, setup()/loop() structure, and Serial.begin(9600).</p></div></div>
+    <div class="tip-card"><div class="tip-icon">🆚</div><div><h4>Comparison Questions</h4><p>Arduino vs ESP32 vs RPi — cost, WiFi, processing power, OS. Learn the table above.</p></div></div>
+    <div class="tip-card"><div class="tip-icon">🔧</div><div><h4>Hardware — Ex 1 &amp; 2 Only</h4><p>Practice wiring MQ-2 to Arduino and DHT11 to ESP32. Know pin connections by heart.</p></div></div>
+    <div class="tip-card"><div class="tip-icon">📌</div><div><h4>Key Voltage Levels</h4><p>Arduino: HIGH=5V, LOW=0V · ESP32 &amp; RPi GPIO: HIGH=3.3V, LOW=0V.</p></div></div>
   </div>
 </section>
 
@@ -465,20 +205,10 @@
   <p style="margin-top:0.5rem">Study smart. Good luck! 🚀</p>
 </footer>
 
+<script src="nav.js"></script>
 <script>
-  // Reading progress bar
-  window.addEventListener('scroll', () => {
-    const winScroll = document.documentElement.scrollTop;
-    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    const scrolled = (winScroll / height) * 100;
-    document.getElementById('progressBar').style.width = scrolled + '%';
-  });
-
-  // Fade up animations
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('fade-up'); } });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.exp-card, .stat-card, .tip-card').forEach(el => observer.observe(el));
+  initProgress();
+  initNav('index.html');
 </script>
 </body>
 </html>
