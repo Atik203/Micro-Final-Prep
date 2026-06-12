@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experiment 4 — Pi Camera & Object Detection | Micro Lab Prep</title>
+  <meta name="description" content="Study guide for Experiment 4: Raspberry Pi Camera Module, image/video capture, Python picamera, TensorFlow Lite object detection. CSE 4326 Micro Lab.">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .camera-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem; margin: 1rem 0;
+    }
+    .camera-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      border-top: 3px solid var(--accent-amber);
+    }
+    .camera-card h4 { font-size: 0.9rem; color: var(--accent-amber); margin-bottom: 0.5rem; }
+    .camera-card p { font-size: 0.82rem; color: var(--text-secondary); }
+
+    .pin-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin: 1rem 0; }
+    .pin-table th { background: #162030; padding: 0.7rem 1rem; text-align: left; color: var(--accent-amber); border-bottom: 2px solid var(--border); }
+    .pin-table td { padding: 0.65rem 1rem; border-top: 1px solid var(--border); color: var(--text-secondary); }
+    .pin-table tr:hover td { background: #0d1522; }
+    .pin-table td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--accent-cyan); font-weight: 600; }
+
+    .cmd-block {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+      color: #a5d6ff;
+      margin: 0.75rem 0;
+    }
+    .cmd-block .prompt { color: #6ee7b7; user-select: none; }
+    .cmd-block .flag { color: #fcd34d; }
+    .cmd-block .path { color: #d2a8ff; }
+
+    .effect-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .effect-tag {
+      background: #162030; border: 1px solid #1e3a50;
+      color: var(--text-secondary);
+      border-radius: 6px; padding: 0.2rem 0.6rem;
+      font-size: 0.78rem; font-family: 'JetBrains Mono', monospace;
+    }
+
+    .ml-flow {
+      display: flex; flex-direction: column; gap: 0;
+      margin: 1.25rem 0;
+    }
+    .ml-step {
+      display: flex; align-items: flex-start; gap: 1rem;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 0; padding: 0.9rem 1.25rem;
+      border-bottom: none;
+    }
+    .ml-step:first-child { border-radius: 10px 10px 0 0; }
+    .ml-step:last-child { border-radius: 0 0 10px 10px; border-bottom: 1px solid var(--border); }
+    .ml-step-num {
+      min-width: 28px; height: 28px;
+      background: var(--accent-amber);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.8rem;
+      color: #000; flex-shrink: 0;
+    }
+    .ml-step h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .ml-step p { font-size: 0.82rem; color: var(--text-secondary); }
+    .ml-step .cmd { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent-cyan); margin-top: 0.3rem; }
+  </style>
+</head>
+<body>
+
+<div class="reading-progress" id="progressBar"></div>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">⚡ MicroLab Prep</a>
+    <ul class="nav-links">
+      <li><a href="ex_1.html">Ex 1: Arduino</a></li>
+      <li><a href="ex_2.html">Ex 2: ESP32</a></li>
+      <li><a href="ex_3.html">Ex 3: RPi Intro</a></li>
+      <li><a href="ex_4.html" class="active">Ex 4: Pi Camera</a></li>
+      <li><a href="hardware.html">🔧 Hardware</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a> <span>/</span> <span>Experiment 4</span>
+    </div>
+    <div class="flex gap-1 mb-1" style="flex-wrap:wrap; margin-bottom:0.75rem">
+      <span class="badge badge-amber">📷 Pi Camera</span>
+      <span class="badge badge-violet">OpenCV</span>
+      <span class="badge badge-cyan">TensorFlow Lite</span>
+      <span class="badge badge-emerald">Python picamera</span>
+      <span class="badge" style="background:#2a1a05;color:#fcd34d;border:1px solid #f59e0b44;">Written Only</span>
+    </div>
+    <h1>📷 Experiment 4: Image &amp; Video Processing with Pi</h1>
+    <p>Set up and use the Raspberry Pi Camera Module to capture images and videos. Control it from command line and Python. Run a real-time TensorFlow Lite object detection model.</p>
+  </div>
+</div>
+
+<div class="content-layout">
+  <aside class="sidebar">
+    <h3>Contents</h3>
+    <ul>
+      <li><a href="#camera-modules">Camera Modules Overview</a></li>
+      <li><a href="#csi-port">CSI Port &amp; Connection</a></li>
+      <li><a href="#csi-pins">CSI 15-Pin Connector</a></li>
+      <li><a href="#enable-camera">Enable Camera</a></li>
+      <li><a href="#cmd-line">Command Line Tools</a></li>
+      <li><a href="#python-cam">Python picamera</a></li>
+      <li><a href="#settings">Camera Settings &amp; Effects</a></li>
+      <li><a href="#object-detection">Object Detection (TFLite)</a></li>
+      <li><a href="#quiz">Quick Quiz</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- CAMERA MODULES -->
+    <section id="camera-modules">
+      <h2>📷 Raspberry Pi Camera Modules</h2>
+      <p>The Raspberry Pi Foundation offers several camera modules. They all connect via the <strong>CSI (Camera Serial Interface) port</strong> using a ribbon cable.</p>
+
+      <div class="camera-grid">
+        <div class="camera-card">
+          <h4>Original 5MP (2013)</h4>
+          <p>OmniVision OV5647 sensor. Still photos up to 2592×1944. Video: 1080p30. Fixed-focus lens. Compatible with all Pi models.</p>
+        </div>
+        <div class="camera-card">
+          <h4>Camera Module 2 — 8MP (2016)</h4>
+          <p>Sony IMX219 sensor. Photos: 3280×2464. Video: 1080p30, 720p60, VGA90. Still the most common module.</p>
+        </div>
+        <div class="camera-card">
+          <h4>Camera Module 3 — 12MP (2023)</h4>
+          <p>Sony IMX477 sensor. Photos: 4056×3040. Video: 4K30, 1080p60. <strong>Autofocus lens</strong> — newest addition.</p>
+        </div>
+        <div class="camera-card">
+          <h4>NoIR Version</h4>
+          <p>Same specs as regular module but <strong>no infrared filter</strong>. Used with IR light source for night photography.</p>
+        </div>
+        <div class="camera-card">
+          <h4>Global Shutter Camera</h4>
+          <p>Captures all pixels simultaneously. Minimizes distortion for fast-moving objects. Uses smaller CSI connector.</p>
+        </div>
+        <div class="camera-card">
+          <h4>High Quality Camera</h4>
+          <p>12.3 MP Sony IMX477. Supports C and CS mount lenses for professional photography applications.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CSI PORT -->
+    <section id="csi-port">
+      <h2>🔌 CSI Port &amp; Camera Connection</h2>
+      <p>The CSI port is located between the audio port and HDMI port on most Raspberry Pi models. All official camera modules use a <strong>ribbon cable</strong> to connect.</p>
+
+      <div class="info-box amber">
+        <div class="icon">📸</div>
+        <div class="content">
+          <div class="label">Connection Steps</div>
+          <p>1. <strong>Power OFF</strong> the Raspberry Pi first.<br>
+          2. Locate the Camera Module port (flat connector near HDMI).<br>
+          3. Gently pull up on the plastic clip of the port.<br>
+          4. Insert the ribbon cable — <strong>shiny contacts facing away from USB ports</strong>.<br>
+          5. Push the plastic clip back down to secure the cable.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CSI PINS -->
+    <section id="csi-pins">
+      <h2>📌 CSI 15-Pin Connector Pinout</h2>
+
+      <div class="table-wrapper">
+        <table class="pin-table">
+          <thead>
+            <tr><th>Pin</th><th>Name</th><th>Function</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>GND</td><td>Ground reference</td></tr>
+            <tr><td>2</td><td>CAM_DN0</td><td>MIPI Data Lane 0 Negative — transmits image data</td></tr>
+            <tr><td>3</td><td>CAM_DP0</td><td>MIPI Data Lane 0 Positive — transmits image data</td></tr>
+            <tr><td>4</td><td>GND</td><td>Ground</td></tr>
+            <tr><td>5</td><td>CAM_DN1</td><td>MIPI Data Lane 1 Negative — additional bandwidth</td></tr>
+            <tr><td>6</td><td>CAM_DP1</td><td>MIPI Data Lane 1 Positive — additional bandwidth</td></tr>
+            <tr><td>7</td><td>GND</td><td>Ground</td></tr>
+            <tr><td>8</td><td>CAM_CN</td><td>MIPI Clock Lane Negative — synchronization</td></tr>
+            <tr><td>9</td><td>CAM_CP</td><td>MIPI Clock Lane Positive — synchronization</td></tr>
+            <tr><td>10</td><td>GND</td><td>Ground</td></tr>
+            <tr><td>11</td><td>CAM_IO0</td><td>Power Enable — Pi controls camera power on/off</td></tr>
+            <tr><td>12</td><td>CAM_IO1</td><td>LED Indicator — camera activity indicator</td></tr>
+            <tr><td>13</td><td>CAM_SCL</td><td>I2C Serial Clock — configuration communication</td></tr>
+            <tr><td>14</td><td>CAM_SDA</td><td>I2C Serial Data — configuration data transfer</td></tr>
+            <tr><td>15</td><td>CAM_3V3</td><td>3.3V Power Input — powers the camera module</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ENABLE CAMERA -->
+    <section id="enable-camera">
+      <h2>⚙️ Enable Camera Interface</h2>
+      <p>After connecting the camera, you must enable it in Raspberry Pi settings:</p>
+
+      <h3>Method 1: GUI</h3>
+      <p>Go to <strong>Main Menu → Raspberry Pi Configuration → Interfaces tab → Camera: Enable</strong></p>
+
+      <h3>Method 2: Terminal (raspi-config)</h3>
+      <div class="cmd-block">
+        <span class="prompt">pi@raspberrypi:~$ </span>sudo raspi-config<br>
+        <span style="color:#8b949e"># Then: Interface Options → Enable Camera → Yes → Finish → Reboot</span>
+      </div>
+    </section>
+
+    <!-- COMMAND LINE -->
+    <section id="cmd-line">
+      <h2>💻 Command Line Tools</h2>
+      <p>Two main command-line tools for camera control:</p>
+
+      <h3>raspistill — Capture Images</h3>
+      <div class="cmd-block">
+        <span class="prompt">$ </span>raspistill <span class="flag">-o</span> <span class="path">Desktop/image.jpg</span>
+        <br><span style="color:#8b949e"># Takes a photo (5 second preview then capture)</span>
+      </div>
+      <div class="cmd-block">
+        <span class="prompt">$ </span>raspistill <span class="flag">-o</span> <span class="path">Desktop/image-small.jpg</span> <span class="flag">-w</span> 640 <span class="flag">-h</span> 480
+        <br><span style="color:#8b949e"># Custom resolution: width=640, height=480</span>
+      </div>
+
+      <h3>raspivid — Record Video</h3>
+      <div class="cmd-block">
+        <span class="prompt">$ </span>raspivid <span class="flag">-t</span> 10000 <span class="flag">-o</span> <span class="path">Desktop/video.h264</span>
+        <br><span style="color:#8b949e"># Records 10 seconds (10,000 ms) at 1920×1080</span>
+      </div>
+
+      <div class="info-box cyan">
+        <div class="icon">▶️</div>
+        <div class="content">
+          <div class="label">Playing the Video</div>
+          <p>Double-click the <code>video.h264</code> file on the Desktop to open it in <strong>VLC Media Player</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PYTHON PICAMERA -->
+    <section id="python-cam">
+      <h2>🐍 Python picamera Library</h2>
+      <p>The <strong>picamera</strong> library allows full Python control of the Camera Module. File should be saved as <code>camera.py</code> (NOT <code>picamera.py</code>!).</p>
+
+      <h3>Basic: Capture an Image</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">Python 3</div><span>camera.py — Capture photo</span></div>
+        <div class="code-body"><span class="kw">from</span> picamera <span class="kw">import</span> PiCamera
+<span class="kw">from</span> time <span class="kw">import</span> sleep
+
+camera = <span class="fn">PiCamera</span>()
+camera.<span class="fn">start_preview</span>()   <span class="cm"># show preview (5 sec)</span>
+<span class="fn">sleep</span>(<span class="num">5</span>)                   <span class="cm"># wait ≥2 sec before capture!</span>
+camera.<span class="fn">capture</span>(<span class="str">'/home/pi/Desktop/image.jpg'</span>)
+camera.<span class="fn">stop_preview</span>()</div>
+      </div>
+
+      <div class="info-box amber">
+        <div class="icon">⚠️</div>
+        <div class="content">
+          <div class="label">Important Note</div>
+          <p>Always sleep for at least <strong>2 seconds</strong> before capturing — this gives the camera sensor time to adjust to light levels. Camera preview only works when a monitor is connected (not over SSH/VNC).</p>
+        </div>
+      </div>
+
+      <h3>Capture Multiple Photos (Loop)</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">Python 3</div><span>Take 5 photos in a loop</span></div>
+        <div class="code-body">camera.<span class="fn">start_preview</span>()
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):             <span class="cm"># i = 0, 1, 2, 3, 4</span>
+    <span class="fn">sleep</span>(<span class="num">5</span>)
+    camera.<span class="fn">capture</span>(<span class="str">'/home/pi/Desktop/image%s.jpg'</span> % i)
+    <span class="cm"># saves: image0.jpg, image1.jpg, ..., image4.jpg</span>
+camera.<span class="fn">stop_preview</span>()</div>
+      </div>
+
+      <h3>Record Video</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">Python 3</div><span>Record 5 second video</span></div>
+        <div class="code-body">camera.<span class="fn">start_preview</span>()
+camera.<span class="fn">start_recording</span>(<span class="str">'/home/pi/Desktop/video.h264'</span>)
+<span class="fn">sleep</span>(<span class="num">5</span>)                     <span class="cm"># record for 5 seconds</span>
+camera.<span class="fn">stop_recording</span>()
+camera.<span class="fn">stop_preview</span>()</div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="settings">
+      <h2>🎨 Camera Settings &amp; Effects</h2>
+
+      <h3>Resolution &amp; Framerate</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">Python 3</div><span>Max resolution photo</span></div>
+        <div class="code-body">camera.resolution = (<span class="num">2592</span>, <span class="num">1944</span>)  <span class="cm"># max still: 2592×1944</span>
+camera.framerate = <span class="num">15</span>              <span class="cm"># required for max resolution</span>
+<span class="cm"># Max video: 1920×1080  |  Min: 64×64</span></div>
+      </div>
+
+      <h3>Rotate Image</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">Python 3</div></div>
+        <div class="code-body">camera.rotation = <span class="num">180</span>  <span class="cm"># rotate 180° (useful if preview is upside-down)</span>
+<span class="cm"># Can also use: 90, 270, or 0 (to reset)</span></div>
+      </div>
+
+      <h3>Transparent Preview</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">Python 3</div></div>
+        <div class="code-body">camera.<span class="fn">start_preview</span>(alpha=<span class="num">200</span>)  <span class="cm"># alpha: 0 (invisible) to 255 (opaque)</span></div>
+      </div>
+
+      <h3>Add Text Annotation</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">Python 3</div></div>
+        <div class="code-body">camera.annotate_text = <span class="str">"Hello world!"</span>
+camera.annotate_text_size = <span class="num">50</span>  <span class="cm"># size: 6 to 160, default 32</span></div>
+      </div>
+
+      <h3>Brightness &amp; Contrast</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">Python 3</div></div>
+        <div class="code-body">camera.brightness = <span class="num">70</span>  <span class="cm"># 0-100, default 50</span>
+camera.contrast = <span class="num">50</span>   <span class="cm"># 0-100, default 0</span></div>
+      </div>
+
+      <h3>Image Effects (camera.image_effect)</h3>
+      <div class="effect-tags">
+        <span class="effect-tag">none</span>
+        <span class="effect-tag">oilpaint</span>
+        <span class="effect-tag">blur</span>
+        <span class="effect-tag">negative</span>
+        <span class="effect-tag">hatch</span>
+        <span class="effect-tag">cartoon</span>
+        <span class="effect-tag">solarize</span>
+        <span class="effect-tag">sketch</span>
+        <span class="effect-tag">colorswap</span>
+        <span class="effect-tag">watercolor</span>
+        <span class="effect-tag">pastel</span>
+        <span class="effect-tag">emboss</span>
+        <span class="effect-tag">film</span>
+        <span class="effect-tag">posterise</span>
+        <span class="effect-tag">washedout</span>
+        <span class="effect-tag">denoise</span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">Python 3</div><span>Apply effect</span></div>
+        <div class="code-body">camera.image_effect = <span class="str">'colorswap'</span>  <span class="cm"># apply colorswap effect</span>
+
+<span class="cm"># Loop through ALL effects:</span>
+<span class="kw">for</span> effect <span class="kw">in</span> camera.image_effects:
+    camera.image_effect = effect
+    camera.annotate_text = <span class="str">"Effect: %s"</span> % effect
+    <span class="fn">sleep</span>(<span class="num">5</span>)</div>
+      </div>
+
+      <h3>Exposure Modes</h3>
+      <p>Use <code>camera.exposure_mode</code>. Options: <code>off, auto, night, nightpreview, backlight, spotlight, sports, snow, beach, verylong, fixedfps, antishake, fireworks</code>. Default: <code>auto</code>.</p>
+
+      <h3>White Balance Modes</h3>
+      <p>Use <code>camera.awb_mode</code>. Options: <code>off, auto, sunlight, cloudy, shade, tungsten, fluorescent, incandescent, flash, horizon</code>. Default: <code>auto</code>.</p>
+    </section>
+
+    <!-- OBJECT DETECTION -->
+    <section id="object-detection">
+      <h2>🤖 Object Detection with TensorFlow Lite</h2>
+      <p>The Raspberry Pi's processing power can run ML algorithms! We use a pre-trained SSDLite-MobileNet-v2 model (from Google) to detect <strong>80 common objects</strong> in real-time.</p>
+
+      <h3>Tools Required</h3>
+      <div class="grid-2">
+        <div class="card">
+          <h3 class="text-amber">TensorFlow Lite</h3>
+          <p>Lightweight version of TensorFlow optimized for <strong>mobile and embedded devices</strong>. Designed for resource-constrained platforms like Raspberry Pi.</p>
+        </div>
+        <div class="card">
+          <h3 class="text-cyan">OpenCV (cv2)</h3>
+          <p>Open Source Computer Vision Library. Used to <strong>grab images from the Pi Camera video feed</strong> and draw detection results (bounding boxes, labels) on them.</p>
+        </div>
+      </div>
+
+      <h3>Setup Steps</h3>
+      <div class="ml-flow">
+        <div class="ml-step">
+          <div class="ml-step-num">1</div>
+          <div>
+            <h4>Update Raspberry Pi</h4>
+            <p>Keep software current for compatibility.</p>
+            <div class="cmd">sudo apt-get update &amp;&amp; sudo apt-get dist-upgrade</div>
+          </div>
+        </div>
+        <div class="ml-step">
+          <div class="ml-step-num">2</div>
+          <div>
+            <h4>Clone the Repository</h4>
+            <p>Download scripts from EdjeElectronics GitHub repo.</p>
+            <div class="cmd">git clone https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi.git<br>mv TensorFlow-Lite-Object-Detection... objDetection<br>cd objDetection</div>
+          </div>
+        </div>
+        <div class="ml-step">
+          <div class="ml-step-num">3</div>
+          <div>
+            <h4>Create Virtual Environment</h4>
+            <p>Isolated Python environment for dependencies (like a separate "room" for this project's software).</p>
+            <div class="cmd">sudo pip3 install virtualenv<br>python3 -m venv objDetection-env<br>source objDetection-env/bin/activate</div>
+          </div>
+        </div>
+        <div class="ml-step">
+          <div class="ml-step-num">4</div>
+          <div>
+            <h4>Install TensorFlow Lite + OpenCV</h4>
+            <p>Run the shell script to install all dependencies (~400MB download).</p>
+            <div class="cmd">bash get_pi_requirements.sh<br>sudo apt-get install libopenblas-dev<br>pip install numpy==1.26.4</div>
+          </div>
+        </div>
+        <div class="ml-step">
+          <div class="ml-step-num">5</div>
+          <div>
+            <h4>Download &amp; Deploy the Model</h4>
+            <p>Download Google's SSDLite-MobileNet-v2 model trained on MSCOCO dataset (detects 80 objects).</p>
+            <div class="cmd">wget https://storage.googleapis.com/.../coco_ssd_mobilenet_v1_1.0_quant.zip<br>unzip *.zip -d Sample_TFLite_model</div>
+          </div>
+        </div>
+        <div class="ml-step">
+          <div class="ml-step-num">6</div>
+          <div>
+            <h4>Run Object Detection!</h4>
+            <p>After a few moments of initialization, a window shows the camera feed with bounding boxes and labels on detected objects.</p>
+            <div class="cmd">python3 TFLite_detection_webcam.py --modeldir=Sample_TFLite_model</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box violet">
+        <div class="icon">💡</div>
+        <div class="content">
+          <div class="label">Virtual Environment Explained</div>
+          <p>A virtual environment is an isolated Python environment — like separate rooms in a house where each room has different furniture (libraries). Every time you open a new terminal, reactivate it: <code>source objDetection-env/bin/activate</code></p>
+        </div>
+      </div>
+
+      <h3>Common Errors &amp; Fixes</h3>
+      <div class="accordion">
+        <div class="accordion-item">
+          <button class="accordion-header" onclick="toggleAcc(this)">
+            <span>ImportError: No module named 'cv2'</span>
+            <span class="accordion-arrow">▼</span>
+          </button>
+          <div class="accordion-body">
+            <p>This happens when the virtual environment is not active. Fix: close terminal, reopen it, then run <code>cd objDetection</code> followed by <code>source objDetection-env/bin/activate</code>, then try again.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-header" onclick="toggleAcc(this)">
+            <span>TypeError: int() argument must be ... 'NoneType'</span>
+            <span class="accordion-arrow">▼</span>
+          </button>
+          <div class="accordion-body">
+            <p>The program received an empty array from the camera — something is wrong with the camera connection. Try unplugging and re-plugging the camera, or power cycle the Raspberry Pi.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-header" onclick="toggleAcc(this)">
+            <span>Packages Do Not Match Hashes</span>
+            <span class="accordion-arrow">▼</span>
+          </button>
+          <div class="accordion-body">
+            <p>Package data was corrupted during download. Re-run <code>bash get_pi_requirements.sh</code> a few more times until it succeeds.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-header" onclick="toggleAcc(this)">
+            <span>IndexError: list index out of range</span>
+            <span class="accordion-arrow">▼</span>
+          </button>
+          <div class="accordion-body">
+            <p>You may be using an image classification model instead of an object detection model. Teachable Machine creates classification models — use a proper object detection model from TensorFlow Lite.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz">
+      <h2>🧠 Quick Quiz — Test Yourself</h2>
+
+      <div class="quiz-card">
+        <div class="quiz-q">Q1. What library is used in Python to control the Raspberry Pi Camera Module?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="checkAnswer(this, false)">A) opencv-pi</button>
+          <button class="quiz-option" onclick="checkAnswer(this, true)">B) picamera</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">C) rpi-camera</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">D) gpiozero</button>
+        </div>
+        <div class="quiz-result">The picamera library provides Python control over the Pi Camera Module ✓</div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-q">Q2. What command captures a 10-second video using raspivid?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="checkAnswer(this, false)">A) raspivid -t 10 -o video.h264</button>
+          <button class="quiz-option" onclick="checkAnswer(this, true)">B) raspivid -t 10000 -o Desktop/video.h264</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">C) raspistill -t 10000 -o video.mp4</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">D) picam record 10 video.h264</button>
+        </div>
+        <div class="quiz-result">raspivid -t 10000 -o video.h264 — time is in milliseconds, so 10000ms = 10 seconds ✓</div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-q">Q3. What is TensorFlow Lite used for in the object detection experiment?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="checkAnswer(this, false)">A) Taking photos</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">B) Connecting to WiFi</button>
+          <button class="quiz-option" onclick="checkAnswer(this, true)">C) Running a lightweight ML model for object detection on the Pi</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">D) Installing OpenCV</button>
+        </div>
+        <div class="quiz-result">TensorFlow Lite is a lightweight ML framework optimized for embedded devices like Raspberry Pi ✓</div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-q">Q4. What should you NOT name your Python camera file?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="checkAnswer(this, false)">A) camera.py</button>
+          <button class="quiz-option" onclick="checkAnswer(this, true)">B) picamera.py</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">C) main.py</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">D) capture.py</button>
+        </div>
+        <div class="quiz-result">Never name it picamera.py — it would conflict with the picamera library itself! ✓</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <p>Experiment 4 — Pi Camera &amp; Object Detection | <a href="ex_3.html" style="color:var(--accent-cyan)">← Ex 3: RPi Intro</a> | <a href="hardware.html" style="color:var(--accent-cyan)">Hardware Task →</a></p>
+</footer>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const winScroll = document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    document.getElementById('progressBar').style.width = ((winScroll / height) * 100) + '%';
+  });
+  function toggleAcc(btn) { btn.closest('.accordion-item').classList.toggle('open'); }
+  function checkAnswer(btn, isCorrect) {
+    const card = btn.closest('.quiz-card');
+    if (card.querySelector('.correct, .wrong')) return;
+    btn.classList.add(isCorrect ? 'correct' : 'wrong');
+    const result = card.querySelector('.quiz-result');
+    result.classList.add('show', isCorrect ? 'correct-msg' : 'wrong-msg');
+    if (!isCorrect) card.querySelectorAll('.quiz-option').forEach(o => { if(o !== btn) o.style.opacity='0.5'; });
+  }
+</script>
+</body>
+</html>

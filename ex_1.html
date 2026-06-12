@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experiment 1 — Arduino + Gas Sensor + OLED | Micro Lab Prep</title>
+  <meta name="description" content="Study guide for Experiment 1: Arduino Uno interfacing with MQ-2 gas sensor and SSD1306 OLED display. CSE 4326 Micro Lab.">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .key-fact {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.5rem 0.9rem; margin: 0.25rem;
+      font-size: 0.875rem;
+    }
+    .key-fact strong { color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; }
+    .pin-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin: 1rem 0; }
+    .pin-table th { background: #162030; padding: 0.7rem 1rem; text-align: left; color: var(--accent-cyan); border-bottom: 2px solid var(--border); }
+    .pin-table td { padding: 0.65rem 1rem; border-top: 1px solid var(--border); color: var(--text-secondary); }
+    .pin-table tr:hover td { background: #0d1522; }
+    .pin-table td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--accent-amber); font-weight: 600; }
+    .wiring-box {
+      background: #0d1117; border: 1px solid #30363d; border-radius: 10px;
+      padding: 1.25rem; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; color: #e6edf3; line-height: 1.8; margin: 1rem 0;
+    }
+    .wiring-box .arrow { color: var(--accent-cyan); }
+    .wiring-box .comp { color: var(--accent-amber); font-weight: 700; }
+    .wiring-box .pin { color: #d2a8ff; }
+  </style>
+</head>
+<body>
+
+<div class="reading-progress" id="progressBar"></div>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">⚡ MicroLab Prep</a>
+    <ul class="nav-links">
+      <li><a href="ex_1.html" class="active">Ex 1: Arduino</a></li>
+      <li><a href="ex_2.html">Ex 2: ESP32</a></li>
+      <li><a href="ex_3.html">Ex 3: RPi Intro</a></li>
+      <li><a href="ex_4.html">Ex 4: Pi Camera</a></li>
+      <li><a href="hardware.html">🔧 Hardware</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a> <span>/</span> <span>Experiment 1</span>
+    </div>
+    <div class="flex gap-1 mb-1" style="flex-wrap:wrap; margin-bottom:0.75rem">
+      <span class="badge badge-cyan">🤖 Arduino Uno</span>
+      <span class="badge badge-amber">MQ-2 Sensor</span>
+      <span class="badge badge-violet">OLED SSD1306</span>
+      <span class="badge badge-emerald">Written + Hardware</span>
+    </div>
+    <h1>🤖 Experiment 1: Arduino &amp; Gas Sensor</h1>
+    <p>Introduction to Arduino Uno, interfacing the MQ-2 gas sensor, and displaying sensor data on an OLED display. This experiment is tested in both written AND hardware sections.</p>
+  </div>
+</div>
+
+<div class="content-layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h3>Contents</h3>
+    <ul>
+      <li><a href="#arduino-intro">Arduino Introduction</a></li>
+      <li><a href="#pins">Pin Overview</a></li>
+      <li><a href="#functions">setup() &amp; loop()</a></li>
+      <li><a href="#syntax">Key Syntax</a></li>
+      <li><a href="#serial">Serial Communication</a></li>
+      <li><a href="#mq2">MQ-2 Gas Sensor</a></li>
+      <li><a href="#oled">OLED Display</a></li>
+      <li><a href="#wiring">Wiring Guide</a></li>
+      <li><a href="#code">Full Code Examples</a></li>
+      <li><a href="#quiz">Quick Quiz</a></li>
+    </ul>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- ARDUINO INTRO -->
+    <section id="arduino-intro">
+      <h2>🤖 Arduino Introduction</h2>
+      <p>Arduino is an <strong>open-source hardware and software platform</strong> for building digital devices. The <strong>Arduino Uno</strong> is the most popular board for mid-level projects — it's what we use in this course.</p>
+
+      <div class="info-box cyan">
+        <div class="icon">💡</div>
+        <div class="content">
+          <div class="label">Key Fact</div>
+          <p>Arduino Uno uses the <strong>ATmega328P</strong> microcontroller running at 16 MHz with 2 KB RAM and 32 KB flash memory.</p>
+        </div>
+      </div>
+
+      <h3>Arduino Applications</h3>
+      <ul>
+        <li>Home automation &amp; smart systems</li>
+        <li>Robotics &amp; motor control</li>
+        <li>IoT &amp; environmental monitoring</li>
+        <li>Security systems</li>
+        <li>Weather monitoring &amp; smart agriculture</li>
+        <li>Healthcare monitoring</li>
+      </ul>
+    </section>
+
+    <!-- PINS -->
+    <section id="pins">
+      <h2>📌 Pin Overview</h2>
+      <p>The Arduino Uno has two types of pins: <strong>Digital</strong> and <strong>Analog</strong>.</p>
+
+      <div class="table-wrapper">
+        <table class="pin-table">
+          <thead>
+            <tr><th>Pin Type</th><th>Pins</th><th>Voltage Levels</th><th>Function</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Digital</td>
+              <td>D0 – D13</td>
+              <td>HIGH = 5V, LOW = 0V</td>
+              <td>Digital input or output — reads/writes HIGH or LOW only</td>
+            </tr>
+            <tr>
+              <td>Analog Input</td>
+              <td>A0 – A5</td>
+              <td>0V to 5V range</td>
+              <td>10-bit ADC resolution (values 0–1023). Reads analog sensors.</td>
+            </tr>
+            <tr>
+              <td>UART TX</td>
+              <td>Pin 1 (TX)</td>
+              <td>Digital</td>
+              <td>Transmit data via serial. Connect to RX of another device.</td>
+            </tr>
+            <tr>
+              <td>UART RX</td>
+              <td>Pin 0 (RX)</td>
+              <td>Digital</td>
+              <td>Receive data via serial. Connect to TX of another device.</td>
+            </tr>
+            <tr>
+              <td>PWM</td>
+              <td>3, 5, 6, 9, 10, 11</td>
+              <td>0–255 (analogWrite)</td>
+              <td>Pulse Width Modulation — simulate analog output</td>
+            </tr>
+            <tr>
+              <td>I2C SDA</td>
+              <td>A4</td>
+              <td>Digital</td>
+              <td>I2C data line — used by OLED, sensors</td>
+            </tr>
+            <tr>
+              <td>I2C SCL</td>
+              <td>A5</td>
+              <td>Digital</td>
+              <td>I2C clock line — used by OLED, sensors</td>
+            </tr>
+            <tr>
+              <td>Power</td>
+              <td>5V, 3.3V, GND</td>
+              <td>—</td>
+              <td>Power supply pins for sensors and components</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="highlight">
+        <p>⚠️ <strong>Exam Alert:</strong> When using UART serial communication, the Arduino's <strong>TX pin</strong> connects to the <strong>RX pin</strong> of another device, and vice versa. (TX ↔ RX cross-connection)</p>
+      </div>
+    </section>
+
+    <!-- FUNCTIONS -->
+    <section id="functions">
+      <h2>⚙️ setup() and loop() Functions</h2>
+      <p>Every Arduino program requires exactly two functions:</p>
+
+      <div class="accordion">
+        <div class="accordion-item open">
+          <button class="accordion-header" onclick="toggleAcc(this)">
+            <span>🔧 setup() — runs ONCE at startup</span>
+            <span class="accordion-arrow">▼</span>
+          </button>
+          <div class="accordion-body">
+            <ul>
+              <li>Called once when the Arduino powers on or is reset</li>
+              <li>Used to initialize variables, pin modes, and configurations</li>
+              <li>Use <span class="font-mono text-cyan">pinMode()</span>, <span class="font-mono text-cyan">Serial.begin()</span> here</li>
+              <li>Think of it as your "one-time setup" block</li>
+            </ul>
+            <div class="code-block mt-2">
+              <div class="code-header"><div class="code-lang">⬡ Arduino C++</div><span>setup()</span></div>
+              <div class="code-body"><span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">pinMode</span>(<span class="num">13</span>, <span class="kw">OUTPUT</span>);  <span class="cm">// configure pin 13 as output</span>
+  <span class="fn">Serial</span>.<span class="fn">begin</span>(<span class="num">9600</span>);   <span class="cm">// start serial at 9600 baud</span>
+  <span class="cm">// runs only once!</span>
+}</div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-header" onclick="toggleAcc(this)">
+            <span>🔄 loop() — runs REPEATEDLY forever</span>
+            <span class="accordion-arrow">▼</span>
+          </button>
+          <div class="accordion-body">
+            <ul>
+              <li>Runs continuously after <span class="font-mono text-cyan">setup()</span> completes</li>
+              <li>This is where your main logic lives</li>
+              <li>Repeats as long as the Arduino is powered on</li>
+              <li>Used to: read sensors, control outputs, implement functionality</li>
+            </ul>
+            <div class="code-block mt-2">
+              <div class="code-header"><div class="code-lang">⬡ Arduino C++</div><span>loop()</span></div>
+              <div class="code-body"><span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="fn">digitalWrite</span>(<span class="num">13</span>, <span class="kw">HIGH</span>);  <span class="cm">// LED ON</span>
+  <span class="fn">delay</span>(<span class="num">1000</span>);               <span class="cm">// wait 1 second</span>
+  <span class="fn">digitalWrite</span>(<span class="num">13</span>, <span class="kw">LOW</span>);   <span class="cm">// LED OFF</span>
+  <span class="fn">delay</span>(<span class="num">1000</span>);               <span class="cm">// wait 1 second</span>
+  <span class="cm">// repeats forever!</span>
+}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SYNTAX -->
+    <section id="syntax">
+      <h2>📝 Key Arduino Functions (Syntax)</h2>
+
+      <div class="table-wrapper">
+        <table class="pin-table">
+          <thead>
+            <tr><th>Function</th><th>Syntax</th><th>What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>pinMode</td>
+              <td><span class="font-mono" style="color:#d2a8ff">pinMode(pin, mode)</span></td>
+              <td>Sets a pin as INPUT or OUTPUT. e.g. <code>pinMode(13, OUTPUT)</code></td>
+            </tr>
+            <tr>
+              <td>digitalWrite</td>
+              <td><span class="font-mono" style="color:#d2a8ff">digitalWrite(pin, value)</span></td>
+              <td>Sets digital pin HIGH (5V) or LOW (0V). e.g. <code>digitalWrite(1, HIGH)</code></td>
+            </tr>
+            <tr>
+              <td>digitalRead</td>
+              <td><span class="font-mono" style="color:#d2a8ff">digitalRead(pin)</span></td>
+              <td>Reads a digital pin — returns HIGH or LOW. e.g. <code>digitalRead(2)</code></td>
+            </tr>
+            <tr>
+              <td>analogRead</td>
+              <td><span class="font-mono" style="color:#d2a8ff">analogRead(pin)</span></td>
+              <td>Reads analog voltage (0–1023, 10-bit). e.g. <code>analogRead(A0)</code></td>
+            </tr>
+            <tr>
+              <td>delay</td>
+              <td><span class="font-mono" style="color:#d2a8ff">delay(ms)</span></td>
+              <td>Pauses execution for specified milliseconds. e.g. <code>delay(1000)</code> = 1 second</td>
+            </tr>
+            <tr>
+              <td>Serial.print</td>
+              <td><span class="font-mono" style="color:#d2a8ff">Serial.print(data)</span></td>
+              <td>Prints to serial monitor (same line)</td>
+            </tr>
+            <tr>
+              <td>Serial.println</td>
+              <td><span class="font-mono" style="color:#d2a8ff">Serial.println(data)</span></td>
+              <td>Prints to serial monitor (new line)</td>
+            </tr>
+            <tr>
+              <td>INPUT_PULLUP</td>
+              <td><span class="font-mono" style="color:#d2a8ff">pinMode(2, INPUT_PULLUP)</span></td>
+              <td>Uses internal 50kΩ pull-up resistor. Default=HIGH, LOW when button pressed.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>LED Blink Example — The Classic!</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">⬡ Arduino C++</div><span>LED Blink (Pin 1)</span></div>
+        <div class="code-body"><span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">pinMode</span>(<span class="num">1</span>, <span class="kw">OUTPUT</span>); <span class="cm">// set pin 1 as output</span>
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="fn">digitalWrite</span>(<span class="num">1</span>, <span class="kw">HIGH</span>); <span class="cm">// turn LED ON (5V)</span>
+  <span class="fn">delay</span>(<span class="num">1000</span>);            <span class="cm">// wait 1 second</span>
+  <span class="fn">digitalWrite</span>(<span class="num">1</span>, <span class="kw">LOW</span>);  <span class="cm">// turn LED OFF (0V)</span>
+  <span class="fn">delay</span>(<span class="num">1000</span>);            <span class="cm">// wait 1 second</span>
+}</div>
+      </div>
+
+      <div class="info-box amber">
+        <div class="icon">🎯</div>
+        <div class="content">
+          <div class="label">Exam Code Modification — 2× Blink</div>
+          <p>To blink LED twice before loop restarts: repeat digitalWrite HIGH/delay/LOW/delay twice inside loop().</p>
+          <div class="code-block mt-2">
+            <div class="code-header"><div class="code-lang">⬡ Arduino C++</div><span>Blink Twice Example</span></div>
+            <div class="code-body"><span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="cm">// Blink 1</span>
+  <span class="fn">digitalWrite</span>(<span class="num">7</span>, <span class="kw">HIGH</span>); <span class="fn">delay</span>(<span class="num">500</span>);
+  <span class="fn">digitalWrite</span>(<span class="num">7</span>, <span class="kw">LOW</span>);  <span class="fn">delay</span>(<span class="num">500</span>);
+  <span class="cm">// Blink 2</span>
+  <span class="fn">digitalWrite</span>(<span class="num">7</span>, <span class="kw">HIGH</span>); <span class="fn">delay</span>(<span class="num">500</span>);
+  <span class="fn">digitalWrite</span>(<span class="num">7</span>, <span class="kw">LOW</span>);  <span class="fn">delay</span>(<span class="num">500</span>);
+  <span class="cm">// loop() restarts here</span>
+}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERIAL -->
+    <section id="serial">
+      <h2>📡 Serial Communication</h2>
+
+      <div class="highlight">
+        <p><strong>Serial.begin(9600)</strong> — Initializes serial communication between the Arduino and a computer (or other device) via the serial interface. <strong>9600</strong> is the baud rate (bits per second transmitted/received).</p>
+      </div>
+
+      <h3>Common Baud Rates</h3>
+      <div class="flex flex-wrap gap-1" style="margin: 0.75rem 0">
+        <span class="key-fact">9600 <strong>standard</strong></span>
+        <span class="key-fact">115200 <strong>faster (ESP32)</strong></span>
+      </div>
+
+      <h3>Print a String via Serial</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">⬡ Arduino C++</div><span>Serial Print Example</span></div>
+        <div class="code-body"><span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">Serial</span>.<span class="fn">begin</span>(<span class="num">9600</span>); <span class="cm">// initialize serial at 9600 baud rate</span>
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="fn">Serial</span>.<span class="fn">println</span>(<span class="str">"Hello from Arduino!!!"</span>); <span class="cm">// print + new line</span>
+  <span class="fn">delay</span>(<span class="num">300</span>);
+}</div>
+      </div>
+
+      <div class="info-box cyan">
+        <div class="icon">🔗</div>
+        <div class="content">
+          <div class="label">UART Cross-Connection Rule</div>
+          <p>Arduino <strong>TX (Pin 1)</strong> → Other device's <strong>RX</strong> pin<br>
+          Arduino <strong>RX (Pin 0)</strong> → Other device's <strong>TX</strong> pin<br>
+          In Proteus: RX of Arduino ↔ TXD of virtual terminal</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MQ-2 -->
+    <section id="mq2">
+      <h2>💨 MQ-2 Gas Sensor</h2>
+      <p>The MQ-2 is a <strong>Metal Oxide Semiconductor (MOS)</strong> type sensor. It detects multiple gases (LPG, Methane, CO, Alcohol, Smoke, H2, Propane) but <strong>cannot identify which gas</strong> is present. Range: 200–10,000 ppm.</p>
+
+      <h3>MQ-2 Pin Diagram</h3>
+      <div class="table-wrapper">
+        <table class="pin-table">
+          <thead>
+            <tr><th>Pin</th><th>Name</th><th>Description</th><th>Connect To</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>VCC</td><td>Power</td><td>5V supply (±0.1%)</td><td>Arduino 5V</td></tr>
+            <tr><td>GND</td><td>Ground</td><td>Ground reference (0V)</td><td>Arduino GND</td></tr>
+            <tr><td>AO</td><td>Analog Output</td><td>Analog voltage proportional to gas concentration</td><td>Arduino A0 (analog pin)</td></tr>
+            <tr><td>DO</td><td>Digital Output</td><td>HIGH/LOW based on threshold set by potentiometer</td><td>Arduino Digital Pin 2</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Operating Modes</h3>
+      <div class="grid-2">
+        <div class="card">
+          <h3 class="text-cyan">📊 Analog Mode (AO pin)</h3>
+          <p>Output voltage is <strong>proportional to gas concentration</strong>. Clean air → 0V. Max concentration (≥10,000 ppm) → 5V. Connect to Arduino A0 and use <code>analogRead()</code>.</p>
+        </div>
+        <div class="card">
+          <h3 class="text-amber">🔲 Digital Mode (DO pin)</h3>
+          <p>Output is HIGH or LOW based on a <strong>threshold set by onboard potentiometer</strong>. Gas exceeds threshold → LOW output; below threshold → HIGH. Connect to digital pin.</p>
+        </div>
+      </div>
+
+      <div class="info-box amber">
+        <div class="icon">⏰</div>
+        <div class="content">
+          <div class="label">Pre-Heat Time</div>
+          <p>MQ-2 requires <strong>at least 30 minutes (ideally 1 hour)</strong> to warm up for accurate readings. Add <code>delay(20000)</code> in setup() for code-level warmup.</p>
+        </div>
+      </div>
+
+      <h3>PPM (Parts Per Million)</h3>
+      <p>PPM measures gas concentration. 2 ppm methane means 2 out of every 1 million air molecules is methane. The MQ-2 sensor range is <strong>200–10,000 ppm</strong>.</p>
+
+      <h3>MQ-2 Arduino Code (Reading PPM)</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">⬡ Arduino C++</div><span>MQ-2 Gas Sensor Reading</span></div>
+        <div class="code-body"><span class="kw">const int</span> sensorPin = A0;   <span class="cm">// analog pin</span>
+<span class="typ">#define</span> RL   <span class="num">10</span>            <span class="cm">// load resistance (10 ohm)</span>
+<span class="typ">#define</span> Ro   <span class="num">20</span>            <span class="cm">// resistance in fresh air</span>
+<span class="typ">#define</span> m   -<span class="num">0.263</span>          <span class="cm">// slope</span>
+<span class="typ">#define</span> b    <span class="num">0.42</span>           <span class="cm">// intercept</span>
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">Serial</span>.<span class="fn">begin</span>(<span class="num">9600</span>);
+  <span class="fn">Serial</span>.<span class="fn">println</span>(<span class="str">"MQ2 warming up!"</span>);
+  <span class="fn">delay</span>(<span class="num">20000</span>);          <span class="cm">// allow MQ2 to warm up</span>
+  <span class="fn">pinMode</span>(sensorPin, <span class="kw">INPUT</span>);
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="kw">float</span> sensorValue = <span class="fn">analogRead</span>(sensorPin); <span class="cm">// 0-1023</span>
+  <span class="kw">float</span> VRL = sensorValue * (<span class="num">5.0</span>/<span class="num">1023.0</span>);   <span class="cm">// convert to 0-5V</span>
+  <span class="kw">float</span> Rs  = ((<span class="num">5.0</span>*RL)/VRL) - RL;           <span class="cm">// sensor resistance</span>
+  <span class="kw">float</span> ratio = Rs/Ro;
+  <span class="kw">float</span> ppm = <span class="fn">pow</span>(<span class="num">10</span>, ((<span class="fn">log10</span>(ratio)-b)/m));  <span class="cm">// calculate ppm</span>
+  <span class="fn">Serial</span>.<span class="fn">print</span>(<span class="str">"PPM: "</span>);
+  <span class="fn">Serial</span>.<span class="fn">println</span>(ppm);
+}</div>
+      </div>
+    </section>
+
+    <!-- OLED -->
+    <section id="oled">
+      <h2>🖥️ OLED Display (SSD1306)</h2>
+      <p>The SSD1306 128×64 OLED works as an <strong>I2C device</strong>. It has a screen address (commonly <code>0x3C</code>) that must be configured.</p>
+
+      <h3>OLED Wiring to Arduino</h3>
+      <div class="wiring-box">
+<span class="comp">OLED Pin</span>    <span class="arrow">→</span>  <span class="comp">Arduino Pin</span>
+<span class="pin">VCC</span>         <span class="arrow">→</span>  <span class="pin">5V</span>
+<span class="pin">GND</span>         <span class="arrow">→</span>  <span class="pin">GND</span>
+<span class="pin">SDA</span>         <span class="arrow">→</span>  <span class="pin">A4</span>   (I2C Data)
+<span class="pin">SCL</span>         <span class="arrow">→</span>  <span class="pin">A5</span>   (I2C Clock)
+      </div>
+
+      <h3>Required Libraries</h3>
+      <ul>
+        <li><strong>Adafruit_SSD1306.h</strong> — main OLED driver</li>
+        <li><strong>Adafruit_GFX.h</strong> — graphics library</li>
+        <li><strong>Wire.h</strong> — I2C communication</li>
+      </ul>
+
+      <h3>OLED "Hello World" Code</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">⬡ Arduino C++</div><span>OLED Display</span></div>
+        <div class="code-body"><span class="kw">#include</span> &lt;Wire.h&gt;
+<span class="kw">#include</span> &lt;Adafruit_GFX.h&gt;
+<span class="kw">#include</span> &lt;Adafruit_SSD1306.h&gt;
+
+<span class="typ">#define</span> OLED_RESET     -<span class="num">1</span>
+<span class="typ">#define</span> SCREEN_ADDRESS <span class="num">0x3C</span>  <span class="cm">// change to your I2C address!</span>
+
+Adafruit_SSD1306 <span class="fn">display</span>(<span class="num">128</span>, <span class="num">64</span>, &amp;Wire, OLED_RESET);
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="kw">if</span> (!display.<span class="fn">begin</span>(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    <span class="kw">for</span> (;;); <span class="cm">// loop forever if OLED fails</span>
+  }
+  display.<span class="fn">clearDisplay</span>();
+  display.<span class="fn">setTextColor</span>(WHITE);
+  display.<span class="fn">setTextSize</span>(<span class="num">1</span>);
+  display.<span class="fn">display</span>();
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  display.<span class="fn">clearDisplay</span>();
+  display.<span class="fn">setCursor</span>(<span class="num">0</span>, <span class="num">12</span>);
+  display.<span class="fn">println</span>(<span class="str">"Hello World!"</span>);
+  display.<span class="fn">display</span>();
+  <span class="fn">delay</span>(<span class="num">100</span>);
+}</div>
+      </div>
+
+      <div class="info-box violet">
+        <div class="icon">🔍</div>
+        <div class="content">
+          <div class="label">Finding I2C Address</div>
+          <p>Go to: <strong>Arduino IDE → File → Examples → Wire → i2c_scanner</strong>. Upload it and open the Serial Monitor to find your OLED's address (usually 0x3C or 0x3D).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- WIRING -->
+    <section id="wiring">
+      <h2>🔌 Full System Wiring</h2>
+      <p>Complete connection for MQ-2 Gas Sensor + OLED Display + LED with Arduino Uno:</p>
+
+      <div class="wiring-box">
+<span class="cm">==== MQ-2 Gas Sensor ====</span>
+<span class="comp">MQ-2 VCC</span>   <span class="arrow">→</span>  <span class="pin">Arduino 5V</span>
+<span class="comp">MQ-2 GND</span>   <span class="arrow">→</span>  <span class="pin">Arduino GND</span>
+<span class="comp">MQ-2 AO</span>    <span class="arrow">→</span>  <span class="pin">Arduino A0</span>     (analog reading)
+<span class="comp">MQ-2 DO</span>    <span class="arrow">→</span>  <span class="pin">Arduino D2</span>     (digital threshold)
+<span class="comp">10K Resistor</span> between MQ-2 DO and VCC (pull-up)
+
+<span class="cm">==== OLED Display (I2C) ====</span>
+<span class="comp">OLED VCC</span>   <span class="arrow">→</span>  <span class="pin">Arduino 5V</span>
+<span class="comp">OLED GND</span>   <span class="arrow">→</span>  <span class="pin">Arduino GND</span>
+<span class="comp">OLED SDA</span>   <span class="arrow">→</span>  <span class="pin">Arduino A4</span>     (I2C data)
+<span class="comp">OLED SCL</span>   <span class="arrow">→</span>  <span class="pin">Arduino A5</span>     (I2C clock)
+
+<span class="cm">==== LED ====</span>
+<span class="comp">LED (+)</span>    <span class="arrow">→</span>  <span class="pin">Digital Pin 13</span>  (through resistor)
+<span class="comp">LED (-)</span>    <span class="arrow">→</span>  <span class="pin">GND</span>
+      </div>
+    </section>
+
+    <!-- PUSH BUTTON -->
+    <section id="code">
+      <h2>💻 More Code Examples</h2>
+
+      <h3>Push Button Controlling LED</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">⬡ Arduino C++</div><span>Push Button + LED</span></div>
+        <div class="code-body"><span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">Serial</span>.<span class="fn">begin</span>(<span class="num">9600</span>);
+  <span class="fn">pinMode</span>(<span class="num">2</span>, <span class="kw">INPUT_PULLUP</span>); <span class="cm">// pin 2 = button (internal pull-up)</span>
+  <span class="fn">pinMode</span>(<span class="num">13</span>, <span class="kw">OUTPUT</span>);     <span class="cm">// pin 13 = LED</span>
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="kw">int</span> sensorVal = <span class="fn">digitalRead</span>(<span class="num">2</span>);  <span class="cm">// HIGH when not pressed</span>
+  <span class="fn">Serial</span>.<span class="fn">println</span>(sensorVal);
+
+  <span class="cm">// With INPUT_PULLUP: logic is INVERTED</span>
+  <span class="cm">// Button pressed = LOW, not pressed = HIGH</span>
+  <span class="kw">if</span> (sensorVal == <span class="kw">LOW</span>) {
+    <span class="fn">digitalWrite</span>(<span class="num">13</span>, <span class="kw">HIGH</span>); <span class="cm">// LED ON when button pressed</span>
+  } <span class="kw">else</span> {
+    <span class="fn">digitalWrite</span>(<span class="num">13</span>, <span class="kw">LOW</span>);  <span class="cm">// LED OFF when released</span>
+  }
+}</div>
+      </div>
+
+      <div class="info-box rose">
+        <div class="icon">⚡</div>
+        <div class="content">
+          <div class="label">INPUT_PULLUP — Logic is INVERTED!</div>
+          <p>When using <code>INPUT_PULLUP</code>, the default state is <strong>HIGH</strong>. When the button is pressed, it reads <strong>LOW</strong>. This is the opposite of what you might expect!</p>
+        </div>
+      </div>
+
+      <h3>LED 3s ON, 2s OFF — Modification</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">⬡ Arduino C++</div><span>Modified timing</span></div>
+        <div class="code-body"><span class="cm">// Modified lines only:</span>
+  <span class="fn">digitalWrite</span>(<span class="num">1</span>, <span class="kw">HIGH</span>);
+  <span class="fn">delay</span>(<span class="num">3000</span>);  <span class="cm">// ON for 3 seconds</span>
+  <span class="fn">digitalWrite</span>(<span class="num">1</span>, <span class="kw">LOW</span>);
+  <span class="fn">delay</span>(<span class="num">2000</span>);  <span class="cm">// OFF for 2 seconds</span></div>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz">
+      <h2>🧠 Quick Quiz — Test Yourself</h2>
+
+      <div class="quiz-card">
+        <div class="quiz-q">Q1. What is the voltage level for a HIGH state signal in digital pins on the Arduino Uno board?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="checkAnswer(this, false)">A) 0V</button>
+          <button class="quiz-option" onclick="checkAnswer(this, true)">B) 5V</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">C) 3.3V</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">D) 1.5V</button>
+        </div>
+        <div class="quiz-result">HIGH state = 5V on Arduino Uno ✓</div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-q">Q2. When using UART on Arduino Uno, which pin should connect to the TX of another device?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="checkAnswer(this, false)">A) Pin TX</button>
+          <button class="quiz-option" onclick="checkAnswer(this, true)">B) Pin RX</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">C) Any digital pin</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">D) Any analog pin</button>
+        </div>
+        <div class="quiz-result">RX of Arduino connects to TX of the other device (cross-connection) ✓</div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-q">Q3. What does delay(1000) do in Arduino code?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="checkAnswer(this, false)">A) Delays 1 microsecond</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">B) Delays 100 milliseconds</button>
+          <button class="quiz-option" onclick="checkAnswer(this, true)">C) Delays 1000 milliseconds (1 second)</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">D) Delays 1000 seconds</button>
+        </div>
+        <div class="quiz-result">delay() takes milliseconds — delay(1000) = 1 second ✓</div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-q">Q4. Which OLED pins connect to Arduino A4 and A5?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="checkAnswer(this, false)">A) VCC and GND</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">B) DO and AO</button>
+          <button class="quiz-option" onclick="checkAnswer(this, true)">C) SDA and SCL (I2C)</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">D) TX and RX</button>
+        </div>
+        <div class="quiz-result">A4 = SDA (I2C data), A5 = SCL (I2C clock) ✓</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <p>Experiment 1 — Arduino &amp; Gas Sensor | <a href="index.html" style="color:var(--accent-cyan)">← Back to Home</a> | <a href="ex_2.html" style="color:var(--accent-cyan)">Ex 2: ESP32 →</a></p>
+</footer>
+
+<script>
+  // Reading progress bar
+  window.addEventListener('scroll', () => {
+    const winScroll = document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    document.getElementById('progressBar').style.width = ((winScroll / height) * 100) + '%';
+  });
+
+  // Accordion
+  function toggleAcc(btn) {
+    const item = btn.closest('.accordion-item');
+    item.classList.toggle('open');
+  }
+
+  // Quiz
+  function checkAnswer(btn, isCorrect) {
+    const card = btn.closest('.quiz-card');
+    if (card.querySelector('.quiz-option.correct, .quiz-option.wrong')) return;
+    btn.classList.add(isCorrect ? 'correct' : 'wrong');
+    const result = card.querySelector('.quiz-result');
+    result.classList.add('show', isCorrect ? 'correct-msg' : 'wrong-msg');
+    if (!isCorrect) {
+      card.querySelectorAll('.quiz-option').forEach(o => {
+        if (o !== btn) {
+          o.style.opacity = '0.5';
+        }
+      });
+    }
+  }
+</script>
+</body>
+</html>

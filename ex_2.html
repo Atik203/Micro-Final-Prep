@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experiment 2 — ESP32 + XAMPP + IoT | Micro Lab Prep</title>
+  <meta name="description" content="Study guide for Experiment 2: ESP32 WiFi IoT with XAMPP, DHT11 sensor, PHP and MySQL database. CSE 4326 Micro Lab.">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .wiring-box {
+      background: #0d1117; border: 1px solid #30363d; border-radius: 10px;
+      padding: 1.25rem; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; color: #e6edf3; line-height: 1.8; margin: 1rem 0;
+    }
+    .wiring-box .arrow { color: var(--accent-cyan); }
+    .wiring-box .comp { color: var(--accent-amber); font-weight: 700; }
+    .wiring-box .pin { color: #d2a8ff; }
+    .wiring-box .cm { color: #8b949e; font-style: italic; }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem; margin: 1rem 0;
+    }
+    .feature-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      border-left: 3px solid var(--accent-emerald);
+    }
+    .feature-item h4 { font-size: 0.9rem; color: var(--accent-emerald); margin-bottom: 0.3rem; }
+    .feature-item p { font-size: 0.82rem; color: var(--text-secondary); }
+
+    .pin-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin: 1rem 0; }
+    .pin-table th { background: #162030; padding: 0.7rem 1rem; text-align: left; color: var(--accent-emerald); border-bottom: 2px solid var(--border); }
+    .pin-table td { padding: 0.65rem 1rem; border-top: 1px solid var(--border); color: var(--text-secondary); }
+    .pin-table tr:hover td { background: #0d1522; }
+    .pin-table td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--accent-amber); font-weight: 600; }
+    .xampp-flow {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: 1.25rem 0;
+      padding: 1.25rem;
+      background: var(--bg-card);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .xampp-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      text-align: center;
+      flex: 1;
+      min-width: 110px;
+    }
+    .xampp-box .name { font-weight: 700; font-size: 0.9rem; }
+    .xampp-box .desc { color: var(--text-muted); font-size: 0.75rem; margin-top: 0.15rem; }
+    .flow-arrow { color: var(--accent-cyan); font-size: 1.2rem; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<div class="reading-progress" id="progressBar"></div>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">⚡ MicroLab Prep</a>
+    <ul class="nav-links">
+      <li><a href="ex_1.html">Ex 1: Arduino</a></li>
+      <li><a href="ex_2.html" class="active">Ex 2: ESP32</a></li>
+      <li><a href="ex_3.html">Ex 3: RPi Intro</a></li>
+      <li><a href="ex_4.html">Ex 4: Pi Camera</a></li>
+      <li><a href="hardware.html">🔧 Hardware</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a> <span>/</span> <span>Experiment 2</span>
+    </div>
+    <div class="flex gap-1 mb-1" style="flex-wrap:wrap; margin-bottom:0.75rem">
+      <span class="badge badge-emerald">📡 ESP32</span>
+      <span class="badge badge-cyan">XAMPP</span>
+      <span class="badge badge-amber">DHT11 Sensor</span>
+      <span class="badge badge-violet">PHP &amp; MySQL</span>
+      <span class="badge badge-emerald">Written + Hardware</span>
+    </div>
+    <h1>📡 Experiment 2: ESP32 + XAMPP + IoT</h1>
+    <p>Set up ESP32 for WiFi communication, connect DHT11 sensor, send data to a local XAMPP server using PHP &amp; MySQL, and build an IoT dashboard. Tested in both written AND hardware sections.</p>
+  </div>
+</div>
+
+<div class="content-layout">
+  <aside class="sidebar">
+    <h3>Contents</h3>
+    <ul>
+      <li><a href="#esp32-intro">ESP32 Overview</a></li>
+      <li><a href="#esp32-features">Key Features</a></li>
+      <li><a href="#esp32-pins">ESP32 Peripherals</a></li>
+      <li><a href="#dht11">DHT11 Sensor</a></li>
+      <li><a href="#xampp">XAMPP Overview</a></li>
+      <li><a href="#xampp-components">Apache / MySQL / PHP</a></li>
+      <li><a href="#php-code">PHP Code</a></li>
+      <li><a href="#esp32-code">ESP32 Code</a></li>
+      <li><a href="#wiring">Wiring Guide</a></li>
+      <li><a href="#quiz">Quick Quiz</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- ESP32 INTRO -->
+    <section id="esp32-intro">
+      <h2>📡 ESP32 Overview</h2>
+      <p>The ESP32 is a widely-used <strong>System on a Chip (SoC)</strong> that plays a key role in developing <strong>Internet of Things (IoT)</strong> devices. It combines WiFi, Bluetooth, dual processors, and rich peripherals in one chip.</p>
+
+      <div class="info-box emerald">
+        <div class="icon">🌐</div>
+        <div class="content">
+          <div class="label">Key Distinction</div>
+          <p>ESP32 is the board to choose when you need <strong>wireless IoT connectivity</strong> at low cost. Arduino has no WiFi/BT; Raspberry Pi is powerful but expensive. ESP32 is the sweet spot for IoT.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="esp32-features">
+      <h2>⚡ Key Features of ESP32</h2>
+
+      <div class="feature-grid">
+        <div class="feature-item">
+          <h4>📶 Built-in WiFi + BT</h4>
+          <p>802.11 b/g/n WiFi and Bluetooth Classic + BLE. No external module needed — ideal for IoT.</p>
+        </div>
+        <div class="feature-item">
+          <h4>🔒 Security</h4>
+          <p>Hardware encryption support ensures secure data communication — critical for IoT deployments.</p>
+        </div>
+        <div class="feature-item">
+          <h4>⚙️ Dual Core</h4>
+          <p>Two Xtensa LX6 cores at 240 MHz. Enables multitasking and fast parallel processing for real-time apps.</p>
+        </div>
+        <div class="feature-item">
+          <h4>💾 Storage</h4>
+          <p>1.5 MB SPIFFS storage for files on external flash. 4 MB total flash. Useful for web files, configs.</p>
+        </div>
+        <div class="feature-item">
+          <h4>🧠 RAM</h4>
+          <p>520 KB SRAM — handles data and operations efficiently for IoT applications.</p>
+        </div>
+        <div class="feature-item">
+          <h4>🔌 Sensor Compatible</h4>
+          <p>Supports UART, I2C, SPI, ADC, capacitive touch. Interfaces with a wide range of IoT sensors.</p>
+        </div>
+      </div>
+
+      <div class="highlight">
+        <p><strong>3 Key Features for IoT (Exam Answer):</strong> 1) Built-in WiFi &amp; Bluetooth connectivity, 2) Dual-core processor for real-time tasks, 3) Hardware encryption for secure communication.</p>
+      </div>
+    </section>
+
+    <!-- PERIPHERALS -->
+    <section id="esp32-pins">
+      <h2>🔌 ESP32 Peripherals</h2>
+
+      <div class="table-wrapper">
+        <table class="pin-table">
+          <thead>
+            <tr><th>Peripheral</th><th>Count</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>ADC</td><td>18 channels (12-bit)</td><td>Analog to Digital Converter — reads analog sensors</td></tr>
+            <tr><td>SPI</td><td>3 interfaces</td><td>Serial Peripheral Interface — fast communication</td></tr>
+            <tr><td>UART</td><td>3 interfaces</td><td>Serial communication (assignable by code)</td></tr>
+            <tr><td>I2C</td><td>2 interfaces</td><td>Two-wire protocol — OLED, sensors</td></tr>
+            <tr><td>PWM</td><td>16 channels</td><td>Pulse Width Modulation — motor/LED control</td></tr>
+            <tr><td>DAC</td><td>2 channels</td><td>Digital to Analog Converter</td></tr>
+            <tr><td>I2S</td><td>2 interfaces</td><td>Audio interface</td></tr>
+            <tr><td>Capacitive Touch</td><td>10 GPIO pins</td><td>Touch sensing without external hardware</td></tr>
+            <tr><td>GPIO Total</td><td>34 programmable</td><td>UART, I2C, SPI, PWM can be assigned by code</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-box cyan">
+        <div class="icon">💡</div>
+        <div class="content">
+          <div class="label">Important Note</div>
+          <p>ADC and DAC pins are fixed (static). However, UART, I2C, SPI, and PWM can be <strong>reassigned to any GPIO by code</strong> — this makes ESP32 very flexible.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- DHT11 -->
+    <section id="dht11">
+      <h2>🌡️ DHT11 Sensor</h2>
+      <p>The DHT11 measures <strong>temperature and humidity</strong>. In this experiment, it's connected to the ESP32 at <strong>pin D19</strong>.</p>
+
+      <div class="wiring-box">
+<span class="cm">==== DHT11 to ESP32 Connection ====</span>
+<span class="comp">DHT11 VCC</span>  <span class="arrow">→</span>  <span class="pin">ESP32 3.3V</span>  (or 5V via regulator)
+<span class="comp">DHT11 GND</span>  <span class="arrow">→</span>  <span class="pin">ESP32 GND</span>
+<span class="comp">DHT11 DATA</span> <span class="arrow">→</span>  <span class="pin">ESP32 D19</span>   (#define DHTPIN 19)
+<span class="cm">Note: Add 10K pull-up resistor between DATA and VCC</span>
+      </div>
+
+      <h3>DHT11 Code for ESP32</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">⬡ Arduino C++</div><span>DHT11 with ESP32</span></div>
+        <div class="code-body"><span class="kw">#include</span> &lt;DHT.h&gt;
+<span class="typ">#define</span> DHTPIN  <span class="num">19</span>           <span class="cm">// GPIO 19 = D19</span>
+<span class="typ">#define</span> DHTTYPE DHT11
+
+DHT <span class="fn">dht11</span>(DHTPIN, DHTTYPE);  <span class="cm">// create DHT object</span>
+<span class="kw">int</span> temperature = <span class="num">0</span>;
+<span class="kw">int</span> humidity = <span class="num">0</span>;
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">Serial</span>.<span class="fn">begin</span>(<span class="num">115200</span>);     <span class="cm">// ESP32 uses 115200 baud</span>
+  dht11.<span class="fn">begin</span>();            <span class="cm">// initialize sensor</span>
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  temperature = dht11.<span class="fn">readTemperature</span>(); <span class="cm">// Celsius</span>
+  humidity    = dht11.<span class="fn">readHumidity</span>();
+  <span class="kw">if</span> (<span class="fn">isnan</span>(temperature) || <span class="fn">isnan</span>(humidity)) {
+    <span class="fn">Serial</span>.<span class="fn">println</span>(<span class="str">"Sensor read failed!"</span>);
+    <span class="kw">return</span>;
+  }
+  <span class="fn">Serial</span>.<span class="fn">printf</span>(<span class="str">"Temp: %d C, Humidity: %d%%\n"</span>, temperature, humidity);
+}</div>
+      </div>
+
+      <div class="info-box amber">
+        <div class="icon">⚠️</div>
+        <div class="content">
+          <div class="label">Upload Tip</div>
+          <p>If code upload fails on ESP32: Hold the <strong>BOOT button</strong> + press the <strong>EN button</strong>, then click Upload in the IDE. Release BOOT after upload starts.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- XAMPP -->
+    <section id="xampp">
+      <h2>🖥️ XAMPP Overview</h2>
+      <p>XAMPP is a <strong>free, open-source local web server</strong> that lets developers create and test websites on their own computer. It runs a mini internet server locally. The name is an acronym:</p>
+
+      <div class="info-box cyan">
+        <div class="icon">📘</div>
+        <div class="content">
+          <div class="label">XAMPP Acronym</div>
+          <p><strong>X</strong> = Cross-Platform &nbsp;|&nbsp; <strong>A</strong> = Apache &nbsp;|&nbsp; <strong>M</strong> = MySQL &nbsp;|&nbsp; <strong>P</strong> = PHP &nbsp;|&nbsp; <strong>P</strong> = Perl</p>
+        </div>
+      </div>
+
+      <h3>How They Work Together</h3>
+      <div class="xampp-flow">
+        <div class="xampp-box">
+          <div class="name text-cyan">Apache</div>
+          <div class="desc">Web server — serves pages</div>
+        </div>
+        <div class="flow-arrow">⟷</div>
+        <div class="xampp-box">
+          <div class="name text-violet">PHP</div>
+          <div class="desc">Processes data, creates dynamic pages</div>
+        </div>
+        <div class="flow-arrow">⟷</div>
+        <div class="xampp-box">
+          <div class="name text-emerald">MySQL</div>
+          <div class="desc">Stores &amp; manages data</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- XAMPP COMPONENTS -->
+    <section id="xampp-components">
+      <h2>🔧 Apache, MySQL, and PHP</h2>
+
+      <div class="accordion">
+        <div class="accordion-item open">
+          <button class="accordion-header" onclick="toggleAcc(this)">
+            <span>🌐 Apache — The Web Server</span>
+            <span class="accordion-arrow">▼</span>
+          </button>
+          <div class="accordion-body">
+            <p><strong>What it does:</strong> Takes requests from web browsers and delivers the requested web pages.</p>
+            <p><strong>Example:</strong> When you type "www.example.com", Apache delivers the site content to your browser.</p>
+            <p><strong>In XAMPP:</strong> Serves pages at <code>localhost</code>. Must be started in XAMPP Control Panel.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-header" onclick="toggleAcc(this)">
+            <span>💾 MySQL — The Database</span>
+            <span class="accordion-arrow">▼</span>
+          </button>
+          <div class="accordion-body">
+            <p><strong>What it does:</strong> Stores and manages data for websites.</p>
+            <p><strong>Example:</strong> For an online store, MySQL stores product details, customer info, and order history.</p>
+            <p><strong>In our lab:</strong> Stores temperature, humidity, and gas sensor readings from ESP32. Managed via phpMyAdmin.</p>
+            <div class="code-block mt-2">
+              <div class="code-header"><div class="code-lang">SQL</div></div>
+              <div class="code-body"><span class="cm">-- Create a table entry</span>
+<span class="kw">INSERT INTO</span> dht11 (temperature, humidity) <span class="kw">VALUES</span> (<span class="num">10</span>, <span class="num">20</span>);</div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-header" onclick="toggleAcc(this)">
+            <span>🐘 PHP — The Language</span>
+            <span class="accordion-arrow">▼</span>
+          </button>
+          <div class="accordion-body">
+            <p><strong>What it does:</strong> A scripting language for creating dynamic web pages, runs on the server.</p>
+            <p><strong>Example:</strong> When you log in, PHP checks username/password against MySQL and directs you to your account.</p>
+            <p><strong>In our lab:</strong> Receives data POSTed by ESP32 and inserts it into the MySQL database.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Complete Blog Example (How they interact)</h3>
+      <div class="steps">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>User visits the website</h4>
+            <p><strong>Apache</strong> handles the visitor's request and delivers the web page to their browser.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Content is retrieved</h4>
+            <p>The blog post content is stored in <strong>MySQL</strong> database.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Dynamic page generated</h4>
+            <p><strong>PHP</strong> retrieves the blog post from MySQL, formats it, and generates HTML to be displayed.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PHP CODE -->
+    <section id="php-code">
+      <h2>💻 PHP Code — Database Connection</h2>
+      <p>PHP files are stored in <code>C:\xampp\htdocs\your_project_folder\</code>. Access via <code>localhost/your_project_folder/file.php</code>.</p>
+
+      <h3>Connect to Database</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">PHP</div><span>Database Connection</span></div>
+        <div class="code-body"><span class="kw">&lt;?php</span>
+<span class="str">$hostname</span> = <span class="str">"localhost"</span>;
+<span class="str">$username</span> = <span class="str">"root"</span>;
+<span class="str">$password</span> = <span class="str">""</span>;          <span class="cm">// empty by default</span>
+<span class="str">$database</span> = <span class="str">"sensor_db"</span>; <span class="cm">// your database name</span>
+
+<span class="str">$conn</span> = <span class="fn">mysqli_connect</span>(<span class="str">$hostname</span>, <span class="str">$username</span>, <span class="str">$password</span>, <span class="str">$database</span>);
+
+<span class="kw">if</span> (!<span class="str">$conn</span>) {
+  <span class="fn">die</span>(<span class="str">"Connection failed: "</span> . <span class="fn">mysqli_connect_error</span>());
+}
+<span class="fn">echo</span> <span class="str">"Database connection is OK"</span>;
+<span class="kw">?&gt;</span></div>
+      </div>
+
+      <h3>Receive ESP32 Data and Store in DB</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">PHP</div><span>Receive POST data from ESP32</span></div>
+        <div class="code-body"><span class="kw">&lt;?php</span>
+<span class="cm">// ... (connection code above)</span>
+
+<span class="kw">if</span> (<span class="fn">isset</span>(<span class="str">$_POST</span>[<span class="str">"temperature"</span>]) &amp;&amp; <span class="fn">isset</span>(<span class="str">$_POST</span>[<span class="str">"humidity"</span>])) {
+  <span class="str">$t</span> = <span class="str">$_POST</span>[<span class="str">"temperature"</span>]; <span class="cm">// received from ESP32</span>
+  <span class="str">$h</span> = <span class="str">$_POST</span>[<span class="str">"humidity"</span>];
+
+  <span class="str">$sql</span> = <span class="str">"INSERT INTO dht11 (temperature, humidity) VALUES ("</span>.<span class="str">$t</span>.<span class="str">", "</span>.<span class="str">$h</span>.<span class="str">")"</span>;
+
+  <span class="kw">if</span> (<span class="fn">mysqli_query</span>(<span class="str">$conn</span>, <span class="str">$sql</span>)) {
+    <span class="fn">echo</span> <span class="str">"New record created successfully"</span>;
+  } <span class="kw">else</span> {
+    <span class="fn">echo</span> <span class="str">"Error: "</span> . <span class="fn">mysqli_error</span>(<span class="str">$conn</span>);
+  }
+}
+<span class="kw">?&gt;</span></div>
+      </div>
+    </section>
+
+    <!-- ESP32 CODE -->
+    <section id="esp32-code">
+      <h2>🔧 ESP32 WiFi + HTTP Code</h2>
+      <p>The ESP32 connects to WiFi and sends sensor data to the XAMPP server using HTTP POST requests.</p>
+
+      <div class="code-block">
+        <div class="code-header"><div class="code-lang">⬡ Arduino C++</div><span>ESP32 → XAMPP Server</span></div>
+        <div class="code-body"><span class="kw">#include</span> &lt;WiFi.h&gt;
+<span class="kw">#include</span> &lt;HTTPClient.h&gt;
+<span class="kw">#include</span> &lt;DHT.h&gt;
+
+<span class="typ">#define</span> DHTPIN  <span class="num">19</span>
+<span class="typ">#define</span> DHTTYPE DHT11
+DHT <span class="fn">dht11</span>(DHTPIN, DHTTYPE);
+
+<span class="cm">// Replace with your computer's IP (ipconfig command)</span>
+String URL = <span class="str">"http://192.168.1.X/dht11_project/testdata.php"</span>;
+<span class="kw">const char</span>* ssid     = <span class="str">"YOUR_WIFI_SSID"</span>;
+<span class="kw">const char</span>* password = <span class="str">"YOUR_WIFI_PASSWORD"</span>;
+
+<span class="kw">int</span> temperature = <span class="num">0</span>, humidity = <span class="num">0</span>;
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">Serial</span>.<span class="fn">begin</span>(<span class="num">115200</span>);
+  dht11.<span class="fn">begin</span>();
+  <span class="fn">connectWiFi</span>();
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="kw">if</span> (WiFi.<span class="fn">status</span>() != WL_CONNECTED) <span class="fn">connectWiFi</span>();
+  
+  temperature = dht11.<span class="fn">readTemperature</span>();
+  humidity    = dht11.<span class="fn">readHumidity</span>();
+
+  String postData = <span class="str">"temperature="</span> + <span class="fn">String</span>(temperature) +
+                    <span class="str">"&amp;humidity="</span> + <span class="fn">String</span>(humidity);
+
+  HTTPClient http;
+  http.<span class="fn">begin</span>(URL);
+  http.<span class="fn">addHeader</span>(<span class="str">"Content-Type"</span>, <span class="str">"application/x-www-form-urlencoded"</span>);
+  <span class="kw">int</span> httpCode = http.<span class="fn">POST</span>(postData);    <span class="cm">// 200 = success</span>
+  String payload = http.<span class="fn">getString</span>();
+  <span class="fn">Serial</span>.<span class="fn">println</span>(httpCode);
+  <span class="fn">delay</span>(<span class="num">5000</span>); <span class="cm">// send every 5 seconds</span>
+}
+
+<span class="kw">void</span> <span class="fn">connectWiFi</span>() {
+  WiFi.<span class="fn">mode</span>(WIFI_OFF); <span class="fn">delay</span>(<span class="num">1000</span>);
+  WiFi.<span class="fn">mode</span>(WIFI_STA);
+  WiFi.<span class="fn">begin</span>(ssid, password);
+  <span class="fn">Serial</span>.<span class="fn">print</span>(<span class="str">"Connecting..."</span>);
+  <span class="kw">while</span> (WiFi.<span class="fn">status</span>() != WL_CONNECTED) {
+    <span class="fn">delay</span>(<span class="num">500</span>); <span class="fn">Serial</span>.<span class="fn">print</span>(<span class="str">"."</span>);
+  }
+  <span class="fn">Serial</span>.<span class="fn">println</span>(WiFi.<span class="fn">localIP</span>());
+}</div>
+      </div>
+
+      <h3>Key Code Concepts</h3>
+      <ul>
+        <li><strong>WiFi.begin(ssid, password)</strong> — connects to WiFi network</li>
+        <li><strong>HTTPClient http</strong> — creates HTTP client object</li>
+        <li><strong>http.begin(URL)</strong> — sets the target server URL</li>
+        <li><strong>http.POST(postData)</strong> — sends data via HTTP POST; returns 200 on success</li>
+        <li><strong>http.getString()</strong> — gets the server response (e.g., "New record created")</li>
+        <li>Use <code>ipconfig</code> in Windows CMD to find your computer's IP address</li>
+      </ul>
+    </section>
+
+    <!-- WIRING -->
+    <section id="wiring">
+      <h2>🔌 Complete Wiring Summary</h2>
+
+      <div class="wiring-box">
+<span class="cm">==== DHT11 to ESP32 ====</span>
+<span class="comp">DHT11 VCC</span>  <span class="arrow">→</span>  <span class="pin">ESP32 3.3V</span>
+<span class="comp">DHT11 GND</span>  <span class="arrow">→</span>  <span class="pin">ESP32 GND</span>
+<span class="comp">DHT11 DATA</span> <span class="arrow">→</span>  <span class="pin">ESP32 GPIO19 (D19)</span>
+
+<span class="cm">==== MQ-2 Gas Sensor to ESP32 ====</span>
+<span class="comp">MQ-2 VCC</span>   <span class="arrow">→</span>  <span class="pin">ESP32 5V (or VIN)</span>
+<span class="comp">MQ-2 GND</span>   <span class="arrow">→</span>  <span class="pin">ESP32 GND</span>
+<span class="comp">MQ-2 AO</span>    <span class="arrow">→</span>  <span class="pin">ESP32 GPIO34 (ADC1)</span>
+<span class="comp">MQ-2 DO</span>    <span class="arrow">→</span>  <span class="pin">ESP32 any GPIO</span>
+
+<span class="cm">==== LED to ESP32 ====</span>
+<span class="comp">LED (+)</span>    <span class="arrow">→</span>  <span class="pin">ESP32 GPIO (via resistor)</span>
+<span class="comp">LED (-)</span>    <span class="arrow">→</span>  <span class="pin">ESP32 GND</span>
+      </div>
+    </section>
+
+    <!-- XAMPP SETUP STEPS -->
+    <section>
+      <h2>⚙️ XAMPP Setup Steps</h2>
+      <div class="steps">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Download &amp; Install XAMPP</h4>
+            <p>Get from apachefriends.org. Run the installer — straightforward process.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Start Apache &amp; MySQL</h4>
+            <p>Open <code>C:\xampp\xampp-control.exe</code>. Click "Start" for both Apache and MySQL modules.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Verify server works</h4>
+            <p>Type <code>localhost</code> in browser. You should see XAMPP welcome page.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>Create Database via phpMyAdmin</h4>
+            <p>Go to <code>localhost/phpmyadmin</code>. Create new database (e.g., "sensor_db"), then create a table with columns: ID, temperature, humidity, Datetime.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <h4>Create PHP file</h4>
+            <p>Create project folder in <code>C:\xampp\htdocs\</code>. Create <code>testdata.php</code> with connection and INSERT code.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <h4>Upload ESP32 code</h4>
+            <p>Set WiFi credentials and server URL (use <code>ipconfig</code> to get IP). Upload and monitor serial output for "200" response code.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz">
+      <h2>🧠 Quick Quiz — Test Yourself</h2>
+
+      <div class="quiz-card">
+        <div class="quiz-q">Q1. Which core component of XAMPP is responsible for storing and managing data for websites?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="checkAnswer(this, false)">A) Apache</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">B) PHP</button>
+          <button class="quiz-option" onclick="checkAnswer(this, true)">C) MySQL</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">D) Perl</button>
+        </div>
+        <div class="quiz-result">MySQL stores and manages data. Apache serves pages. PHP processes data. ✓</div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-q">Q2. Which component has built-in Bluetooth and WiFi modules?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="checkAnswer(this, false)">A) Arduino</button>
+          <button class="quiz-option" onclick="checkAnswer(this, true)">B) ESP32</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">C) Raspberry Pi (only)</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">D) None of the above</button>
+        </div>
+        <div class="quiz-result">ESP32 has built-in WiFi + BT. RPi also has these but ESP32 is the primary microcontroller with built-in wireless. ✓</div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-q">Q3. In Arduino IDE, what baud rate is typically used by ESP32 in Serial.begin()?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="checkAnswer(this, false)">A) 9600</button>
+          <button class="quiz-option" onclick="checkAnswer(this, true)">B) 115200</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">C) 4800</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">D) 57600</button>
+        </div>
+        <div class="quiz-result">ESP32 typically uses Serial.begin(115200) — faster than Arduino's 9600 ✓</div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-q">Q4. You want to build a gas sensor system that sends alerts to a server. Which board is most appropriate considering cost-efficiency, wireless communication, and processing power?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="checkAnswer(this, false)">A) Arduino Uno — cheapest</button>
+          <button class="quiz-option" onclick="checkAnswer(this, true)">B) ESP32 — best balance for IoT</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">C) Raspberry Pi — most powerful</button>
+          <button class="quiz-option" onclick="checkAnswer(this, false)">D) Any board works equally</button>
+        </div>
+        <div class="quiz-result">ESP32: has built-in WiFi (no extra module), low cost (~$10), sufficient processing for IoT. Arduino lacks WiFi; RPi is overkill and expensive. ✓</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <p>Experiment 2 — ESP32 + XAMPP + IoT | <a href="ex_1.html" style="color:var(--accent-cyan)">← Ex 1: Arduino</a> | <a href="ex_3.html" style="color:var(--accent-cyan)">Ex 3: Raspberry Pi →</a></p>
+</footer>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const winScroll = document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    document.getElementById('progressBar').style.width = ((winScroll / height) * 100) + '%';
+  });
+  function toggleAcc(btn) { btn.closest('.accordion-item').classList.toggle('open'); }
+  function checkAnswer(btn, isCorrect) {
+    const card = btn.closest('.quiz-card');
+    if (card.querySelector('.correct, .wrong')) return;
+    btn.classList.add(isCorrect ? 'correct' : 'wrong');
+    const result = card.querySelector('.quiz-result');
+    result.classList.add('show', isCorrect ? 'correct-msg' : 'wrong-msg');
+    if (!isCorrect) card.querySelectorAll('.quiz-option').forEach(o => { if(o !== btn) o.style.opacity='0.5'; });
+  }
+</script>
+</body>
+</html>
