@@ -396,6 +396,7 @@ tr:hover td { background: #131e2e; }
   display: grid; grid-template-columns: 220px 1fr;
   gap: 2rem; max-width: 1200px; margin: 1.5rem auto 0;
   padding: 0 1.25rem; align-items: start;
+  min-width: 0;
 }
 
 .sidebar {
@@ -417,6 +418,10 @@ tr:hover td { background: #131e2e; }
 /* ============================================================
    MAIN CONTENT
    ============================================================ */
+.main-content {
+  min-width: 0;
+  width: 100%;
+}
 .main-content h2 {
   font-size: clamp(1.1rem, 3vw, 1.35rem); font-weight: 700;
   margin: 2rem 0 0.75rem; padding-top: 0.75rem;
