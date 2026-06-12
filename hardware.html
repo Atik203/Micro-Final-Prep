@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hardware Task Guide — 5 Marks | Micro Lab Prep</title>
+  <meta name="description" content="Hardware task guide for UIU CSE 4326 Micro Lab Final. Covers Experiment 1 (Arduino + MQ-2 + OLED) and Experiment 2 (ESP32 + DHT11) wiring with step-by-step instructions.">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .hw-hero {
+      background: linear-gradient(135deg, #160d35, #0d1a35, #0a1a0a);
+      border-bottom: 1px solid var(--accent-violet);
+      padding: 3rem 1.5rem;
+      text-align: center;
+    }
+    .hw-hero .marks-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-cyan));
+      color: #fff;
+      padding: 0.4rem 1.2rem;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+    .hw-hero h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: 0.75rem; }
+    .hw-hero p { color: var(--text-secondary); max-width: 650px; margin: 0 auto; font-size: 1rem; }
+
+    .hw-section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
+
+    .exp-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .exp-header-icon {
+      width: 60px; height: 60px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+    .exp-header h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .exp-header p { color: var(--text-secondary); font-size: 0.9rem; }
+
+    .component-checklist {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+    .component-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .component-item:hover { border-color: var(--accent-violet); }
+    .component-item.checked { background: #051a10; border-color: var(--accent-emerald); }
+    .component-item .check {
+      width: 20px; height: 20px;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .component-item.checked .check {
+      background: var(--accent-emerald);
+      border-color: var(--accent-emerald);
+      color: #fff;
+    }
+    .component-item span { font-size: 0.875rem; font-weight: 500; }
+
+    .wiring-visual {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.25rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.83rem;
+      line-height: 2;
+    }
+    .wv-section { margin-bottom: 1.25rem; }
+    .wv-title { color: #8b949e; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
+    .wv-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .wv-comp { background: #1c2433; color: var(--accent-amber); padding: 0.15rem 0.6rem; border-radius: 5px; font-weight: 700; white-space: nowrap; }
+    .wv-pin { background: #1c2433; color: #d2a8ff; padding: 0.15rem 0.6rem; border-radius: 5px; white-space: nowrap; }
+    .wv-arrow { color: var(--accent-cyan); font-size: 1rem; }
+    .wv-note { color: #8b949e; font-size: 0.76rem; font-style: italic; margin-left: 0.5rem; }
+
+    .step-detailed {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+    .step-detailed-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .step-detailed-header:hover { background: var(--bg-card-hover); }
+    .step-detailed-num {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.9rem;
+      flex-shrink: 0;
+      color: #fff;
+    }
+    .step-detailed-num.cyan-bg { background: linear-gradient(135deg, var(--accent-cyan), #0891b2); }
+    .step-detailed-num.violet-bg { background: linear-gradient(135deg, var(--accent-violet), #6d28d9); }
+    .step-detailed-title { font-weight: 600; font-size: 0.95rem; flex: 1; }
+    .step-detailed-body {
+      padding: 0 1.25rem 1.25rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-violet), transparent);
+      margin: 3rem 0;
+      border: none;
+    }
+
+    .score-card {
+      background: linear-gradient(135deg, #1a0d35, #0d1a35);
+      border: 1px solid var(--accent-violet);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      margin: 2rem 0;
+    }
+    .score-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 1.25rem; }
+    .score-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid #ffffff11;
+    }
+    .score-row:last-child { border-bottom: none; }
+    .score-mark {
+      min-width: 40px;
+      text-align: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--accent-violet);
+    }
+    .score-desc { font-size: 0.875rem; color: var(--text-secondary); }
+
+    .warning-box {
+      background: #1a0505;
+      border: 1px solid var(--accent-rose);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .warning-box .icon { font-size: 1.2rem; flex-shrink: 0; }
+    .warning-box h4 { font-size: 0.9rem; font-weight: 700; color: var(--accent-rose); margin-bottom: 0.3rem; }
+    .warning-box p { font-size: 0.85rem; color: var(--text-secondary); }
+
+    .quick-ref {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .qr-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+    .qr-title { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; font-weight: 700; }
+    .qr-val { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent-cyan); }
+  </style>
+</head>
+<body>
+
+<div class="reading-progress" id="progressBar"></div>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">⚡ MicroLab Prep</a>
+    <ul class="nav-links">
+      <li><a href="ex_1.html">Ex 1: Arduino</a></li>
+      <li><a href="ex_2.html">Ex 2: ESP32</a></li>
+      <li><a href="ex_3.html">Ex 3: RPi Intro</a></li>
+      <li><a href="ex_4.html">Ex 4: Pi Camera</a></li>
+      <li><a href="hardware.html" class="active">🔧 Hardware</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HARDWARE HERO -->
+<div class="hw-hero">
+  <div class="marks-badge">⚙️ Hardware Task — 5 Marks · Group Work</div>
+  <h1>🔧 Hardware Task Study Guide</h1>
+  <p>Only <strong>Experiments 1 &amp; 2</strong> are included. Know the components, wiring, and quick code for both. This is done in groups — but understand both individually!</p>
+</div>
+
+<!-- IMPORTANT NOTE -->
+<div class="hw-section" style="padding-bottom:0">
+  <div class="info-box amber">
+    <div class="icon">📌</div>
+    <div class="content">
+      <div class="label">Scope of Hardware Task</div>
+      <p><strong>ONLY Experiments 1 and 2</strong> are in scope for the hardware task. Raspberry Pi experiments (3 &amp; 4) are excluded. The task is done in groups.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ====== EXPERIMENT 1 ====== -->
+<div class="hw-section">
+  <div class="exp-header">
+    <div class="exp-header-icon" style="background: rgba(6,182,212,0.15);">🤖</div>
+    <div>
+      <h2>Experiment 1: Arduino + MQ-2 Gas Sensor + OLED</h2>
+      <p>Arduino Uno interfacing with MQ-2 gas sensor for gas detection and SSD1306 OLED display for data visualization.</p>
+    </div>
+  </div>
+
+  <h3>📦 Component Checklist (click to check off)</h3>
+  <div class="component-checklist">
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>Arduino Uno</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>MQ-2 Gas Sensor</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>OLED Display (SSD1306)</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>LED</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>10K Ohm Resistor</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>Breadboard</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>Jumper Wires</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>USB Cable (Arduino)</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>Laptop + Arduino IDE</span>
+    </div>
+  </div>
+
+  <h3>🔌 Wiring Diagram</h3>
+  <div class="wiring-visual">
+    <div class="wv-section">
+      <div class="wv-title">MQ-2 Gas Sensor → Arduino</div>
+      <div class="wv-row"><span class="wv-comp">MQ-2 VCC</span> <span class="wv-arrow">→</span> <span class="wv-pin">Arduino 5V</span> <span class="wv-note">(operating voltage: 5V)</span></div>
+      <div class="wv-row"><span class="wv-comp">MQ-2 GND</span> <span class="wv-arrow">→</span> <span class="wv-pin">Arduino GND</span></div>
+      <div class="wv-row"><span class="wv-comp">MQ-2 AO</span> <span class="wv-arrow">→</span> <span class="wv-pin">Arduino A0</span> <span class="wv-note">(analog reading, 0–1023)</span></div>
+      <div class="wv-row"><span class="wv-comp">MQ-2 DO</span> <span class="wv-arrow">→</span> <span class="wv-pin">Arduino D2</span> <span class="wv-note">(digital threshold output)</span></div>
+      <div class="wv-row"><span class="wv-comp">10K Resistor</span> <span class="wv-arrow">→</span> <span class="wv-pin">Between MQ-2 DO and VCC</span> <span class="wv-note">(pull-up)</span></div>
+    </div>
+    <div class="wv-section">
+      <div class="wv-title">OLED Display (I2C) → Arduino</div>
+      <div class="wv-row"><span class="wv-comp">OLED VCC</span> <span class="wv-arrow">→</span> <span class="wv-pin">Arduino 5V</span></div>
+      <div class="wv-row"><span class="wv-comp">OLED GND</span> <span class="wv-arrow">→</span> <span class="wv-pin">Arduino GND</span></div>
+      <div class="wv-row"><span class="wv-comp">OLED SDA</span> <span class="wv-arrow">→</span> <span class="wv-pin">Arduino A4</span> <span class="wv-note">(I2C Data)</span></div>
+      <div class="wv-row"><span class="wv-comp">OLED SCL</span> <span class="wv-arrow">→</span> <span class="wv-pin">Arduino A5</span> <span class="wv-note">(I2C Clock)</span></div>
+    </div>
+    <div class="wv-section">
+      <div class="wv-title">LED → Arduino</div>
+      <div class="wv-row"><span class="wv-comp">LED (+) Anode</span> <span class="wv-arrow">→</span> <span class="wv-pin">Arduino D13</span> <span class="wv-note">(through resistor)</span></div>
+      <div class="wv-row"><span class="wv-comp">LED (-) Cathode</span> <span class="wv-arrow">→</span> <span class="wv-pin">Arduino GND</span></div>
+    </div>
+  </div>
+
+  <h3>📋 Step-by-Step Connection Guide</h3>
+  <div>
+    <div class="step-detailed">
+      <div class="step-detailed-header">
+        <div class="step-detailed-num cyan-bg">1</div>
+        <div class="step-detailed-title">Preheat the MQ-2 Sensor (30+ minutes)</div>
+      </div>
+      <div class="step-detailed-body">
+        Connect MQ-2 VCC and GND to Arduino's 5V and GND. Let it warm up for at least 30 minutes for accurate readings. The sensor has a small heating element inside. In code, add <code>delay(20000)</code> in setup() as a minimum warmup.
+      </div>
+    </div>
+
+    <div class="step-detailed">
+      <div class="step-detailed-header">
+        <div class="step-detailed-num cyan-bg">2</div>
+        <div class="step-detailed-title">Connect MQ-2 Gas Sensor</div>
+      </div>
+      <div class="step-detailed-body">
+        <strong>VCC → Arduino 5V</strong> (operating voltage: 5V ±0.1%)<br>
+        <strong>GND → Arduino GND</strong><br>
+        <strong>AO → Arduino A0</strong> (for analog readings — ppm calculation)<br>
+        <strong>DO → Arduino D2</strong> (for digital threshold detection)<br>
+        <strong>10K Resistor</strong> between DO pin and VCC (pull-up resistor)
+      </div>
+    </div>
+
+    <div class="step-detailed">
+      <div class="step-detailed-header">
+        <div class="step-detailed-num cyan-bg">3</div>
+        <div class="step-detailed-title">Connect OLED Display (I2C)</div>
+      </div>
+      <div class="step-detailed-body">
+        <strong>VCC → Arduino 5V</strong><br>
+        <strong>GND → Arduino GND</strong><br>
+        <strong>SDA → Arduino A4</strong> (I2C Data line)<br>
+        <strong>SCL → Arduino A5</strong> (I2C Clock line)<br>
+        <em>Note: The OLED uses I2C protocol — two wires carry all data. Find I2C address using i2c_scanner example (usually 0x3C).</em>
+      </div>
+    </div>
+
+    <div class="step-detailed">
+      <div class="step-detailed-header">
+        <div class="step-detailed-num cyan-bg">4</div>
+        <div class="step-detailed-title">Connect LED</div>
+      </div>
+      <div class="step-detailed-body">
+        <strong>LED anode (+)</strong> → 220Ω resistor → <strong>Arduino D13</strong><br>
+        <strong>LED cathode (-)</strong> → <strong>Arduino GND</strong><br>
+        <em>The resistor limits current to prevent burning the LED.</em>
+      </div>
+    </div>
+
+    <div class="step-detailed">
+      <div class="step-detailed-header">
+        <div class="step-detailed-num cyan-bg">5</div>
+        <div class="step-detailed-title">Install Libraries in Arduino IDE</div>
+      </div>
+      <div class="step-detailed-body">
+        Go to: Sketch → Include Library → Manage Libraries<br>
+        Search and install: <strong>Adafruit SSD1306</strong>, <strong>Adafruit GFX</strong>, <strong>Adafruit BusIO</strong>
+      </div>
+    </div>
+
+    <div class="step-detailed">
+      <div class="step-detailed-header">
+        <div class="step-detailed-num cyan-bg">6</div>
+        <div class="step-detailed-title">Upload Code and Test</div>
+      </div>
+      <div class="step-detailed-body">
+        Select the correct board (Arduino Uno) and COM port in Tools menu. Upload the code. Open Serial Monitor to see sensor readings. Check OLED display for output.
+      </div>
+    </div>
+  </div>
+
+  <div class="warning-box">
+    <div class="icon">⚠️</div>
+    <div>
+      <h4>Common Mistakes — Experiment 1</h4>
+      <p>• Connecting OLED SDA to digital D4 instead of A4 — must use A4!<br>
+      • Wrong I2C address in code (check with i2c_scanner first)<br>
+      • Not adding MQ-2 warmup delay in setup()<br>
+      • Forgetting the resistor between LED and Arduino pin</p>
+    </div>
+  </div>
+
+  <h3>⚡ Quick Reference Code — Ex 1</h3>
+  <div class="code-block">
+    <div class="code-header"><div class="code-lang">⬡ Arduino C++</div><span>Gas Sensor + OLED Combined</span></div>
+    <div class="code-body"><span class="kw">#include</span> &lt;Wire.h&gt;
+<span class="kw">#include</span> &lt;Adafruit_GFX.h&gt;
+<span class="kw">#include</span> &lt;Adafruit_SSD1306.h&gt;
+
+<span class="typ">#define</span> SCREEN_ADDRESS <span class="num">0x3C</span>  <span class="cm">// your OLED I2C address</span>
+Adafruit_SSD1306 <span class="fn">display</span>(<span class="num">128</span>, <span class="num">64</span>, &amp;Wire, -<span class="num">1</span>);
+
+<span class="kw">const int</span> sensorPin = A0;
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">Serial</span>.<span class="fn">begin</span>(<span class="num">9600</span>);
+  <span class="fn">Serial</span>.<span class="fn">println</span>(<span class="str">"MQ2 warming up!"</span>);
+  <span class="fn">delay</span>(<span class="num">20000</span>);  <span class="cm">// warm up MQ2</span>
+
+  <span class="kw">if</span> (!display.<span class="fn">begin</span>(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
+    <span class="kw">while</span>(<span class="num">1</span>);  <span class="cm">// halt if OLED fails</span>
+  display.<span class="fn">clearDisplay</span>();
+  display.<span class="fn">setTextColor</span>(WHITE);
+  display.<span class="fn">setTextSize</span>(<span class="num">1</span>);
+  display.<span class="fn">display</span>();
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="kw">int</span> sensorValue = <span class="fn">analogRead</span>(sensorPin); <span class="cm">// 0-1023</span>
+
+  display.<span class="fn">clearDisplay</span>();
+  display.<span class="fn">setCursor</span>(<span class="num">0</span>, <span class="num">0</span>);
+  display.<span class="fn">print</span>(<span class="str">"Gas sensor: "</span>);
+  display.<span class="fn">println</span>(sensorValue);
+  display.<span class="fn">display</span>();
+
+  <span class="fn">Serial</span>.<span class="fn">print</span>(<span class="str">"Gas sensor: "</span>);
+  <span class="fn">Serial</span>.<span class="fn">println</span>(sensorValue);
+  <span class="fn">delay</span>(<span class="num">500</span>);
+}</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ====== EXPERIMENT 2 ====== -->
+<div class="hw-section" style="padding-top: 0">
+  <div class="exp-header">
+    <div class="exp-header-icon" style="background: rgba(16,185,129,0.15);">📡</div>
+    <div>
+      <h2>Experiment 2: ESP32 + DHT11 + XAMPP</h2>
+      <p>ESP32 connects to WiFi, reads DHT11 temperature/humidity data, and sends it to a local XAMPP server via HTTP POST.</p>
+    </div>
+  </div>
+
+  <h3>📦 Component Checklist (click to check off)</h3>
+  <div class="component-checklist">
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>ESP32 Dev Board</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>DHT11 Sensor</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>MQ-2 Gas Sensor</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>LED</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>10K Ohm Resistor</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>Breadboard</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>Jumper Wires</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>Micro-USB Cable</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>Laptop + XAMPP running</span>
+    </div>
+    <div class="component-item" onclick="toggleCheck(this)">
+      <div class="check"></div><span>WiFi/Mobile Hotspot</span>
+    </div>
+  </div>
+
+  <h3>🔌 Wiring Diagram</h3>
+  <div class="wiring-visual">
+    <div class="wv-section">
+      <div class="wv-title">DHT11 Sensor → ESP32</div>
+      <div class="wv-row"><span class="wv-comp">DHT11 VCC</span> <span class="wv-arrow">→</span> <span class="wv-pin">ESP32 3.3V</span> <span class="wv-note">(or 5V via VIN)</span></div>
+      <div class="wv-row"><span class="wv-comp">DHT11 GND</span> <span class="wv-arrow">→</span> <span class="wv-pin">ESP32 GND</span></div>
+      <div class="wv-row"><span class="wv-comp">DHT11 DATA</span> <span class="wv-arrow">→</span> <span class="wv-pin">ESP32 GPIO19 (D19)</span> <span class="wv-note">(#define DHTPIN 19)</span></div>
+      <div class="wv-row"><span class="wv-comp">10K Resistor</span> <span class="wv-arrow">→</span> <span class="wv-pin">Between DATA and VCC</span> <span class="wv-note">(pull-up)</span></div>
+    </div>
+    <div class="wv-section">
+      <div class="wv-title">MQ-2 Gas Sensor → ESP32 (Optional for lab)</div>
+      <div class="wv-row"><span class="wv-comp">MQ-2 VCC</span> <span class="wv-arrow">→</span> <span class="wv-pin">ESP32 VIN (5V)</span></div>
+      <div class="wv-row"><span class="wv-comp">MQ-2 GND</span> <span class="wv-arrow">→</span> <span class="wv-pin">ESP32 GND</span></div>
+      <div class="wv-row"><span class="wv-comp">MQ-2 AO</span> <span class="wv-arrow">→</span> <span class="wv-pin">ESP32 GPIO34</span> <span class="wv-note">(input-only ADC pin)</span></div>
+    </div>
+    <div class="wv-section">
+      <div class="wv-title">LED → ESP32</div>
+      <div class="wv-row"><span class="wv-comp">LED (+)</span> <span class="wv-arrow">→</span> <span class="wv-pin">ESP32 GPIO (via 220Ω resistor)</span></div>
+      <div class="wv-row"><span class="wv-comp">LED (-)</span> <span class="wv-arrow">→</span> <span class="wv-pin">ESP32 GND</span></div>
+    </div>
+  </div>
+
+  <h3>📋 Step-by-Step Connection Guide</h3>
+  <div>
+    <div class="step-detailed">
+      <div class="step-detailed-header">
+        <div class="step-detailed-num violet-bg">1</div>
+        <div class="step-detailed-title">Connect DHT11 to ESP32</div>
+      </div>
+      <div class="step-detailed-body">
+        <strong>VCC → ESP32 3.3V</strong> (can use 5V via VIN pin)<br>
+        <strong>GND → ESP32 GND</strong><br>
+        <strong>DATA → ESP32 GPIO19</strong><br>
+        Add 10K pull-up resistor between DATA and VCC.
+      </div>
+    </div>
+
+    <div class="step-detailed">
+      <div class="step-detailed-header">
+        <div class="step-detailed-num violet-bg">2</div>
+        <div class="step-detailed-title">Set Up XAMPP on Laptop</div>
+      </div>
+      <div class="step-detailed-body">
+        1. Open <strong>C:\xampp\xampp-control.exe</strong><br>
+        2. Start <strong>Apache</strong> and <strong>MySQL</strong><br>
+        3. Verify: open browser → type <code>localhost</code> → XAMPP page should appear<br>
+        4. Go to <code>localhost/phpmyadmin</code> → Create database + table
+      </div>
+    </div>
+
+    <div class="step-detailed">
+      <div class="step-detailed-header">
+        <div class="step-detailed-num violet-bg">3</div>
+        <div class="step-detailed-title">Create PHP File in htdocs</div>
+      </div>
+      <div class="step-detailed-body">
+        Create folder: <code>C:\xampp\htdocs\dht11_project\</code><br>
+        Create file: <code>testdata.php</code><br>
+        Write PHP code to connect to DB and INSERT received data.
+      </div>
+    </div>
+
+    <div class="step-detailed">
+      <div class="step-detailed-header">
+        <div class="step-detailed-num violet-bg">4</div>
+        <div class="step-detailed-title">Find Your Computer's IP Address</div>
+      </div>
+      <div class="step-detailed-body">
+        Open Windows Command Prompt (search "cmd")<br>
+        Type: <code>ipconfig</code><br>
+        Note the <strong>IPv4 Address</strong> (e.g., 192.168.1.105)<br>
+        The URL in ESP32 code will be: <code>http://192.168.1.105/dht11_project/testdata.php</code>
+      </div>
+    </div>
+
+    <div class="step-detailed">
+      <div class="step-detailed-header">
+        <div class="step-detailed-num violet-bg">5</div>
+        <div class="step-detailed-title">Upload ESP32 Code</div>
+      </div>
+      <div class="step-detailed-body">
+        Set your WiFi SSID and password in the code.<br>
+        Set the URL with your laptop's IP address.<br>
+        Upload. If upload fails: hold BOOT button + press EN button, then try again.<br>
+        Open Serial Monitor (115200 baud) — should show connection status and response code 200.
+      </div>
+    </div>
+
+    <div class="step-detailed">
+      <div class="step-detailed-header">
+        <div class="step-detailed-num violet-bg">6</div>
+        <div class="step-detailed-title">Verify Data in phpMyAdmin</div>
+      </div>
+      <div class="step-detailed-body">
+        Go to <code>localhost/phpmyadmin</code> → select your database → click the table.<br>
+        You should see temperature and humidity values being inserted every 5 seconds!
+      </div>
+    </div>
+  </div>
+
+  <div class="warning-box">
+    <div class="icon">⚠️</div>
+    <div>
+      <h4>Common Mistakes — Experiment 2</h4>
+      <p>• ESP32 and laptop must be on the SAME WiFi network (use mobile hotspot if no lab WiFi)<br>
+      • Using wrong laptop IP address in the URL (re-check with ipconfig)<br>
+      • Apache and MySQL not started in XAMPP control panel<br>
+      • Wrong Serial baud rate — ESP32 uses 115200, not 9600<br>
+      • Not holding BOOT button during upload when it fails</p>
+    </div>
+  </div>
+
+  <h3>⚡ Quick Reference Code — Ex 2</h3>
+  <div class="code-block">
+    <div class="code-header"><div class="code-lang">⬡ Arduino C++</div><span>ESP32 → XAMPP (key parts)</span></div>
+    <div class="code-body"><span class="kw">#include</span> &lt;WiFi.h&gt;
+<span class="kw">#include</span> &lt;HTTPClient.h&gt;
+<span class="kw">#include</span> &lt;DHT.h&gt;
+
+<span class="typ">#define</span> DHTPIN <span class="num">19</span>
+<span class="typ">#define</span> DHTTYPE DHT11
+DHT <span class="fn">dht11</span>(DHTPIN, DHTTYPE);
+
+<span class="cm">// ⚠️ Change these 3 values:</span>
+String URL = <span class="str">"http://YOUR_IP/dht11_project/testdata.php"</span>;
+<span class="kw">const char</span>* ssid     = <span class="str">"YOUR_WIFI"</span>;
+<span class="kw">const char</span>* password = <span class="str">"YOUR_WIFI_PASS"</span>;
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">Serial</span>.<span class="fn">begin</span>(<span class="num">115200</span>);   <span class="cm">// ESP32 uses 115200!</span>
+  dht11.<span class="fn">begin</span>();
+  <span class="fn">connectWiFi</span>();
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="kw">int</span> t = dht11.<span class="fn">readTemperature</span>();
+  <span class="kw">int</span> h = dht11.<span class="fn">readHumidity</span>();
+
+  String postData = <span class="str">"temperature="</span> + <span class="fn">String</span>(t) + <span class="str">"&amp;humidity="</span> + <span class="fn">String</span>(h);
+
+  HTTPClient http;
+  http.<span class="fn">begin</span>(URL);
+  http.<span class="fn">addHeader</span>(<span class="str">"Content-Type"</span>, <span class="str">"application/x-www-form-urlencoded"</span>);
+  <span class="kw">int</span> code = http.<span class="fn">POST</span>(postData);     <span class="cm">// 200 = success</span>
+  <span class="fn">Serial</span>.<span class="fn">println</span>(code);
+  <span class="fn">delay</span>(<span class="num">5000</span>);
+}
+
+<span class="kw">void</span> <span class="fn">connectWiFi</span>() {
+  WiFi.<span class="fn">mode</span>(WIFI_STA);
+  WiFi.<span class="fn">begin</span>(ssid, password);
+  <span class="kw">while</span>(WiFi.<span class="fn">status</span>() != WL_CONNECTED) {
+    <span class="fn">delay</span>(<span class="num">500</span>); <span class="fn">Serial</span>.<span class="fn">print</span>(<span class="str">"."</span>);
+  }
+  <span class="fn">Serial</span>.<span class="fn">println</span>(WiFi.<span class="fn">localIP</span>());
+}</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- QUICK REFERENCE -->
+<div class="hw-section" style="padding-top:0">
+  <h2 style="font-size:1.4rem; font-weight:700; margin-bottom:1.25rem;">⚡ Quick Reference Summary</h2>
+
+  <div class="quick-ref">
+    <div class="qr-card">
+      <div class="qr-title">Arduino Voltage</div>
+      <div class="qr-val">HIGH = 5V<br>LOW = 0V</div>
+    </div>
+    <div class="qr-card">
+      <div class="qr-title">MQ-2 → Arduino</div>
+      <div class="qr-val">VCC→5V, GND→GND<br>AO→A0, DO→D2</div>
+    </div>
+    <div class="qr-card">
+      <div class="qr-title">OLED → Arduino</div>
+      <div class="qr-val">VCC→5V, GND→GND<br>SDA→A4, SCL→A5</div>
+    </div>
+    <div class="qr-card">
+      <div class="qr-title">DHT11 → ESP32</div>
+      <div class="qr-val">VCC→3.3V, GND→GND<br>DATA→GPIO19 (D19)</div>
+    </div>
+    <div class="qr-card">
+      <div class="qr-title">Arduino Serial Baud</div>
+      <div class="qr-val">9600 baud<br>(Serial.begin(9600))</div>
+    </div>
+    <div class="qr-card">
+      <div class="qr-title">ESP32 Serial Baud</div>
+      <div class="qr-val">115200 baud<br>(Serial.begin(115200))</div>
+    </div>
+    <div class="qr-card">
+      <div class="qr-title">OLED I2C Address</div>
+      <div class="qr-val">Usually 0x3C<br>(scan with i2c_scanner)</div>
+    </div>
+    <div class="qr-card">
+      <div class="qr-title">HTTP Success Code</div>
+      <div class="qr-val">200 = OK<br>(check Serial Monitor)</div>
+    </div>
+  </div>
+
+  <!-- SCORE GUIDE -->
+  <div class="score-card">
+    <h3>📊 Hardware Task Scoring Estimate (5 Marks)</h3>
+    <div class="score-row">
+      <div class="score-mark">2</div>
+      <div class="score-desc"><strong>Correct wiring / physical connections</strong> — components properly connected without short circuits</div>
+    </div>
+    <div class="score-row">
+      <div class="score-mark">2</div>
+      <div class="score-desc"><strong>Code uploaded and working</strong> — sensor reading displayed/transmitted correctly</div>
+    </div>
+    <div class="score-row">
+      <div class="score-mark">1</div>
+      <div class="score-desc"><strong>Understanding / explanation</strong> — able to explain what each connection does when asked</div>
+    </div>
+  </div>
+
+  <div class="info-box emerald">
+    <div class="icon">🎯</div>
+    <div class="content">
+      <div class="label">Final Hardware Tips</div>
+      <p>
+        1. <strong>Know pin connections by heart</strong> — no need to memorize every pin, just the main ones (SDA/SCL for OLED, AO for MQ-2, D19 for DHT11).<br>
+        2. <strong>Verify circuit before powering</strong> — double-check VCC/GND to avoid damage.<br>
+        3. <strong>Baud rate matters</strong> — Arduino=9600, ESP32=115200 for Serial Monitor.<br>
+        4. <strong>BOOT button for ESP32 upload</strong> — remember to hold it if upload fails.<br>
+        5. <strong>I2C address scan first</strong> for OLED — use i2c_scanner example before running OLED code.
+      </p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>🔧 Hardware Task Guide | <a href="ex_1.html" style="color:var(--accent-cyan)">← Ex 1: Arduino</a> | <a href="ex_2.html" style="color:var(--accent-cyan)">← Ex 2: ESP32</a> | <a href="index.html" style="color:var(--accent-cyan)">🏠 Home</a></p>
+  <p style="margin-top:0.5rem">Good luck with the hardware task! You've got this. 💪</p>
+</footer>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const winScroll = document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    document.getElementById('progressBar').style.width = ((winScroll / height) * 100) + '%';
+  });
+
+  function toggleCheck(item) {
+    item.classList.toggle('checked');
+    item.querySelector('.check').textContent = item.classList.contains('checked') ? '✓' : '';
+  }
+</script>
+</body>
+</html>
