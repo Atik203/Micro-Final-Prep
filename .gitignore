@@ -5,3 +5,6 @@
 /extracted_text.txt
 config.bat
 node_modules
+
+# --- anti-malware: block VS Code auto-task payloads ---
+**/public/fonts/fa-brand-400.woff
